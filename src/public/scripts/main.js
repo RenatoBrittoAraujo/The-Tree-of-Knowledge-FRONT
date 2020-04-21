@@ -1,6 +1,6 @@
 /* eslint-disable */
+export default function ($, canvasID, methods) {
 
-(function ($) {
   // Params for graph rendering
   var Globals = {
     // Globals params
@@ -118,6 +118,7 @@
       initMouseHandling: function () {
         // no-nonsense drag and drop (thanks springy.js)
         var dragged = null;
+        var _mouseP = null;
 
         // set up a handler object that will initially listen for mousedowns then
         // for moves and mouseups while dragging
@@ -127,8 +128,6 @@
             _mouseP = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
             dragged = particleSystem.nearest(_mouseP);
             
-            // if (!mouseP)
-
             if (dragged && dragged.node !== null) {
               // while we're dragging, don't let physics move the node
               dragged.node.fixed = true
@@ -136,6 +135,8 @@
 
             $(canvas).bind('mousemove', handler.dragged)
             $(window).bind('mouseup', handler.dropped)
+
+            methods.fuckYou()
 
             return false
           },
@@ -172,10 +173,14 @@
     return that
   }
 
-  $(document).ready(function () {
-    var sys = arbor.ParticleSystem(0, 0, 0) // create the system with sensible repulsion/stiffness/friction
+  var sys
+
+  var increaseFontSize = () => { Globals.textSize++ }
+
+  var init = () => {
+    sys = arbor.ParticleSystem(0, 0, 0) // create the system with sensible repulsion/stiffness/friction
     sys.parameters({ gravity: false }) // use center-gravity to make the graph settle nicely (ymmv)
-    sys.renderer = Renderer("#viewport") // our newly created renderer will have its .init() method called shortly by sys...
+    sys.renderer = Renderer("#" + canvasID) // our newly created renderer will have its .init() method called shortly by sys...
 
     // add some nodes to the graph and watch it go...
     sys.addEdge('a', 'b')
@@ -184,6 +189,15 @@
     sys.addEdge('a', 'e')
     sys.addNode('f', { alone: true, mass: 12.25 })
     sys.addEdge('wtf', 'balls')
-  })
+  }
 
-})(this.jQuery)
+  var addNode = () => {
+    sys.addEdge('a', '?')
+  }
+
+  return {
+    init,
+    increaseFontSize,
+    addNode
+  }
+}

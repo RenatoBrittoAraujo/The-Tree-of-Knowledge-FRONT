@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 //
 //  arbor.js - version 0.91
 //  a graph vizualization toolkit

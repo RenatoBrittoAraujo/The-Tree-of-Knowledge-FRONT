@@ -5,28 +5,31 @@
 </template>
 
 <script>
-// import main from '../../public/scripts/main'
+import main from '../../public/scripts/main'
+import JQuery from 'jquery'
+window.$ = JQuery
 
 export default {
+  data () {
+    return {
+      canvasID: 'viewport',
+      canvas: null
+    }
+  },
   mounted () {
-    // JQuery
-    this.addScript('https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js')
-    // Arbor
-    this.addScript('/scripts/arbor.js')
-    // Graph
-    this.addScript('/scripts/main.js')
-    // this.graph()
-    // main()
+    this.runGraph()
   },
   methods: {
-    addScript (link) {
-      const script = document.createElement('script')
-      script.async = true
-      script.src = link
-      document.head.appendChild(script)
-    },
     selectRandomNode () {
-      console.log('worked')
+      // this.canvas.increaseFontSize()
+      this.canvas.addNode()
+    },
+    fuckYou () {
+      console.log('Fuck you indeed')
+    },
+    runGraph () {
+      this.canvas = main(window.$, this.canvasID, this)
+      this.canvas.init()
     }
   }
 }
