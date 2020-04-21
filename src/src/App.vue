@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <Header/>
-    <router-view/>
+    <div class="page-content">
+      <router-view/>
+    </div>
   </div>
 </template>
 
@@ -19,5 +21,10 @@ export default {
 #app {
   padding: 0;
   margin: 0;
+}
+.page-content {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 </style>
