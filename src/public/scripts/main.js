@@ -50,7 +50,7 @@
           // pt2:  {x:#, y:#}  target position in screen coords
 
           // draw a line from pt1 to pt2
-          ctx.strokeStyle = "rgba(0,0,0, .333)"
+          ctx.strokeStyle = "rgba(0,0,0, .200)"
           ctx.lineWidth = 1
           ctx.beginPath()
           ctx.moveTo(pt1.x, pt1.y)
@@ -63,9 +63,13 @@
           // pt:   {x:#, y:#}  node position in screen coords
 
           // draw a rectangle centered at pt
-          var w = 10
+          var w = 70
+          var h = 15
           ctx.fillStyle = (node.data.alone) ? "orange" : "black"
-          ctx.fillRect(pt.x - w / 2, pt.y - w / 2, w, w)
+          ctx.font = "15px Arial";
+          ctx.fillRect(pt.x - w / 2, pt.y - h / 2, ctx.measureText("Node " + node.name).width + 5, h)
+          ctx.fillStyle = "white";
+          ctx.fillText("Node " + node.name, pt.x - w / 2 + 1, pt.y + 5);
         })
       },
 
@@ -135,22 +139,7 @@
     sys.addEdge('a', 'd')
     sys.addEdge('a', 'e')
     sys.addNode('f', { alone: true, mass: 12.25 })
-
-    // or, equivalently:
-    //
-    // sys.graft({
-    //   nodes:{
-    //     f:{alone:true, mass:.25}
-    //   }, 
-    //   edges:{
-    //     a:{ b:{},
-    //         c:{},
-    //         d:{},
-    //         e:{}
-    //     }
-    //   }
-    // })
-
+    sys.addEdge('wtf', 'balls')
   })
 
 })(this.jQuery)
