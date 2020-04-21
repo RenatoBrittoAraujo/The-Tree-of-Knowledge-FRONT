@@ -5,6 +5,8 @@
 </template>
 
 <script>
+// import main from '../../public/scripts/main'
+
 export default {
   mounted () {
     // JQuery
@@ -13,6 +15,8 @@ export default {
     this.addScript('/scripts/arbor.js')
     // Graph
     this.addScript('/scripts/main.js')
+    // this.graph()
+    // main()
   },
   methods: {
     addScript (link) {
@@ -20,6 +24,9 @@ export default {
       script.async = true
       script.src = link
       document.head.appendChild(script)
+    },
+    selectRandomNode () {
+      console.log('worked')
     }
   }
 }

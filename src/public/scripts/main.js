@@ -1,10 +1,25 @@
-//
-//  main.js
-//
-//  A project template for using arbor.js
-//
+/* eslint-disable */
 
 (function ($) {
+  // Params for graph rendering
+  var Globals = {
+    // Globals params
+    backgroundColor: "white",
+
+    // Edge params
+    edgeThickness: 1,
+    edgeColor: "rgba(0,0,0, .200)",
+
+    // Node params
+    textSize: 15,
+    textFont: "Verdana",
+    horizontalPadding: 10,
+    verticalPadding: 10,
+
+    activeColor: "orange",
+    inactiveColor: "#444444",
+    textColor: "white"
+  }
 
   var Renderer = function (canvas) {
     var canvas = $(canvas).get(0)
@@ -25,7 +40,7 @@
         // if the canvas is ever resized, screenSize should be called again with
         // the new dimensions
         particleSystem.screenSize(canvas.width, canvas.height)
-        particleSystem.screenPadding(80) // leave an extra 80px of whitespace per side
+        // particleSystem.screenPadding(80) // leave an extra 80px of whitespace per side
 
         // set up some event handlers to allow for node-dragging
         that.initMouseHandling()
@@ -41,7 +56,7 @@
         // which allow you to step through the actual node objects but also pass an
         // x,y point in the screen's coordinate system
         // 
-        ctx.fillStyle = "white"
+        ctx.fillStyle = Globals.backgroundColor
         ctx.fillRect(0, 0, canvas.width, canvas.height)
 
         particleSystem.eachEdge(function (edge, pt1, pt2) {
@@ -49,9 +64,9 @@
           // pt1:  {x:#, y:#}  source position in screen coords
           // pt2:  {x:#, y:#}  target position in screen coords
 
-          // draw a line from pt1 to pt2
-          ctx.strokeStyle = "rgba(0,0,0, .200)"
-          ctx.lineWidth = 1
+          // Edge rendering
+          ctx.strokeStyle = Globals.edgeColor
+          ctx.lineWidth = Globals.edgeThickness
           ctx.beginPath()
           ctx.moveTo(pt1.x, pt1.y)
           ctx.lineTo(pt2.x, pt2.y)
@@ -62,14 +77,41 @@
           // node: {mass:#, p:{x,y}, name:"", data:{}}
           // pt:   {x:#, y:#}  node position in screen coords
 
-          // draw a rectangle centered at pt
-          var w = 70
-          var h = 15
-          ctx.fillStyle = (node.data.alone) ? "orange" : "black"
-          ctx.font = "15px Arial";
-          ctx.fillRect(pt.x - w / 2, pt.y - h / 2, ctx.measureText("Node " + node.name).width + 5, h)
-          ctx.fillStyle = "white";
-          ctx.fillText("Node " + node.name, pt.x - w / 2 + 1, pt.y + 5);
+          // Node text
+          let text = "node " + node.name
+          let textParams = Globals.textSize + "px " + Globals.textFont
+          
+          // Node rendering
+          let textWidth = ctx.measureText(text).width
+          let shape = {
+            x: pt.x - textWidth / 2.0 - Globals.horizontalPadding,
+            y: pt.y - Globals.textSize / 2.0 - Globals.verticalPadding,
+            w: textWidth + 2.0 * Globals.horizontalPadding,
+            h: Globals.textSize + 2.0 * Globals.verticalPadding
+          }
+          ctx.fillStyle = (node.data.alone) ? 
+            Globals.activeColor : Globals.inactiveColor
+          let radius = Globals.verticalPadding + Globals.textSize / 2.0
+          let cy = shape.y + Globals.verticalPadding + Globals.textSize / 2.0
+          let firstCX = shape.x + radius
+          let secondCX = shape.x + shape.w - radius
+          ctx.beginPath()
+          // Left circle
+          ctx.arc(firstCX, cy, radius, 0, 2.0 * Math.PI);
+          ctx.fill()
+          // Right circle
+          ctx.arc(secondCX, cy, radius, 0, 2.0 * Math.PI);
+          ctx.fill()
+          // Middle rect
+          ctx.fillRect(shape.x + radius, shape.y, shape.w - 2.0 * radius, shape.h)
+
+
+          // Font rendering
+          ctx.font = textParams
+          ctx.fillStyle = Globals.textColor
+          ctx.fillText(text, 
+            shape.x + Globals.horizontalPadding, 
+            shape.y + Globals.textSize + Globals.verticalPadding - 2.0 /* I have no ideia why, but this 2 makes everything ok*/)
         })
       },
 
@@ -84,6 +126,8 @@
             var pos = $(canvas).offset();
             _mouseP = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
             dragged = particleSystem.nearest(_mouseP);
+            
+            // if (!mouseP)
 
             if (dragged && dragged.node !== null) {
               // while we're dragging, don't let physics move the node

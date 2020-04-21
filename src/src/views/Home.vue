@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row">
-      <Graph class="col-7"/>
+      <Graph class="col-7" ref="graph"/>
       <div class="col-5 bg-light pr-4 p-2">
         <h3 class="text-center mt-1">Node</h3>
         <hr/>
@@ -58,6 +58,11 @@
           <button class="col btn mr-1 btn-primary">Add Topic</button>
           <button class="col btn btn-primary">Edit</button>
         </div>
+        <div class="row px-3 mt-1">
+          <button class="col btn btn-primary" @click="selectRandomNode">
+            Select random node
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -104,6 +109,9 @@ export default {
         this.votes -= 1 + this.thumb
         this.thumb = -1
       }
+    },
+    selectRandomNode () {
+      this.$refs.graph.selectRandomNode()
     }
   }
 }
