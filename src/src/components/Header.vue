@@ -1,16 +1,17 @@
 <template>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-    <a :class="'navbar-brand ' + (currentRoute == 'index' ? 'font-weight-bold' : '')" href="/">The Tree of Knowledge</a>
+    <a class="navbar-brand" href="#"
+      @click="$emit('sidePageChange', 'NodeDigest')">The Tree of Knowledge</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
-        <li :class="'nav-link ' + (currentRoute == 'about' ? 'active' : '')">
-          <a class="nav-link" href="/about">About</a>
+        <li class="nav-link">
+          <a class="nav-link" href="#about" @click="$emit('sidePageChange', 'About')">About</a>
         </li>
         <li class="nav-link">
-          <a :class="'nav-link ' + (currentRoute == 'users' ? 'active' : '')" href="/users">
+          <a class="nav-link" href="#users">
             <font-awesome-icon icon="user-circle" size="lg"/>
           </a>
         </li>

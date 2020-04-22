@@ -40,7 +40,7 @@ export default function ($, canvasID, methods) {
         // if the canvas is ever resized, screenSize should be called again with
         // the new dimensions
         particleSystem.screenSize(canvas.width, canvas.height)
-        // particleSystem.screenPadding(80) // leave an extra 80px of whitespace per side
+        particleSystem.screenPadding(80) // leave an extra 80px of whitespace per side
 
         // set up some event handlers to allow for node-dragging
         that.initMouseHandling()
@@ -178,21 +178,16 @@ export default function ($, canvasID, methods) {
   var increaseFontSize = () => { Globals.textSize++ }
 
   var init = () => {
-    sys = arbor.ParticleSystem(0, 0, 0) // create the system with sensible repulsion/stiffness/friction
-    sys.parameters({ gravity: false }) // use center-gravity to make the graph settle nicely (ymmv)
+    sys = arbor.ParticleSystem(30, 0, 0) // create the system with sensible repulsion/stiffness/friction
+    sys.parameters({ gravity: true }) // use center-gravity to make the graph settle nicely (ymmv)
     sys.renderer = Renderer("#" + canvasID) // our newly created renderer will have its .init() method called shortly by sys...
 
     // add some nodes to the graph and watch it go...
     sys.addEdge('a', 'b')
-    sys.addEdge('a', 'c')
-    sys.addEdge('a', 'd')
-    sys.addEdge('a', 'e')
-    sys.addNode('f', { alone: true, mass: 12.25 })
-    sys.addEdge('wtf', 'balls')
   }
 
   var addNode = () => {
-    sys.addEdge('a', '?')
+    sys.addEdge('a', Math.random().toFixed(2))
   }
 
   return {

@@ -1,4 +1,16 @@
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faUserSecret)
+import {
+  faUser,
+  faSearch, faUserCircle,
+  faThumbsUp, faThumbsDown
+} from '@fortawesome/free-solid-svg-icons'
+
+library.add(
+  faUser,
+  faSearch, faUserCircle,
+  faThumbsUp, faThumbsDown
+)
+
+export default FontAwesomeIcon
