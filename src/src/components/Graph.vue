@@ -1,6 +1,6 @@
 <template>
   <div>
-    <canvas id="viewport" width="500" height="600" class="border"></canvas>
+    <canvas id="viewport" class="border"></canvas>
   </div>
 </template>
 

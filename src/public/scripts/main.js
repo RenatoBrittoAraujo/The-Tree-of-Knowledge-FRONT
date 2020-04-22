@@ -168,7 +168,21 @@ export default function ($, canvasID, methods) {
         $(canvas).mousedown(handler.clicked);
 
       },
+      getContainerSize: () => {
 
+      },
+      resizer: () => {
+        $(window)
+          .resize(() => {
+            console.log('resize')
+            let width = $('#graph').innerWidth()
+            let height = $('#graph').innerHeight()
+            console.log('width:',width,' height:',height)
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            particleSystem.screenSize(width, height)
+          })
+      }
     }
     return that
   }
@@ -181,9 +195,14 @@ export default function ($, canvasID, methods) {
     sys = arbor.ParticleSystem(30, 0, 0) // create the system with sensible repulsion/stiffness/friction
     sys.parameters({ gravity: true }) // use center-gravity to make the graph settle nicely (ymmv)
     sys.renderer = Renderer("#" + canvasID) // our newly created renderer will have its .init() method called shortly by sys...
+    sys.renderer.resizer()
+
+    // Auto resizer to div
+
 
     // add some nodes to the graph and watch it go...
     sys.addEdge('a', 'b')
+  
   }
 
   var addNode = () => {
