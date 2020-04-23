@@ -4,7 +4,7 @@ The Tree of Knowledge is a website for searching and contributing to a giant tre
 
 Very early stage project:
 
-![Example](https://i.imgur.com/y1RUfOb.png)
+![Example](https://i.imgur.com/HSmJMaH.png)
 
 ## Project setup
 ```
