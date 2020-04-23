@@ -7,8 +7,9 @@ export default function ($, canvasID, methods) {
     backgroundColor: "white",
 
     // Edge params
-    edgeThickness: 1,
-    edgeColor: "rgba(0,0,0, .200)",
+    edgeThickness: 2,
+    edgeBeginColor: "rgba(0,0,0, .8)",
+    edgeEndColor: "rgba(220,220,220, .8)",
 
     // Node params
     textSize: 15,
@@ -28,44 +29,31 @@ export default function ($, canvasID, methods) {
 
     var that = {
       init: function (system) {
-        //
-        // the particle system will call the init function once, right before the
-        // first frame is to be drawn. it's a good place to set up the canvas and
-        // to pass the canvas size to the particle system
-        //
-        // save a reference to the particle system for use in the .redraw() loop
         particleSystem = system
-
-        // inform the system of the screen dimensions so it can map coords for us.
-        // if the canvas is ever resized, screenSize should be called again with
-        // the new dimensions
-        particleSystem.screenSize(canvas.width, canvas.height)
-        particleSystem.screenPadding(80) // leave an extra 80px of whitespace per side
-
-        // set up some event handlers to allow for node-dragging
+        let resizer = this.resize
+        resizer()
+        $(window)
+          .resize(() => {
+            resizer()
+          })
+        particleSystem.screenPadding(80)
         that.initMouseHandling()
       },
-
       redraw: function () {
-        // 
-        // redraw will be called repeatedly during the run whenever the node positions
-        // change. the new positions for the nodes can be accessed by looking at the
-        // .p attribute of a given node. however the p.x & p.y values are in the coordinates
-        // of the particle system rather than the screen. you can either map them to
-        // the screen yourself, or use the convenience iterators .eachNode (and .eachEdge)
-        // which allow you to step through the actual node objects but also pass an
-        // x,y point in the screen's coordinate system
-        // 
         ctx.fillStyle = Globals.backgroundColor
         ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-        particleSystem.eachEdge(function (edge, pt1, pt2) {
-          // edge: {source:Node, target:Node, length:#, data:{}}
-          // pt1:  {x:#, y:#}  source position in screen coords
-          // pt2:  {x:#, y:#}  target position in screen coords
+        let dist = (p1, p2) => {
+          return Math.hypot(p1.x - p2.x, p1.y - p2.y)
+        }
 
+        particleSystem.eachEdge(function (edge, pt1, pt2) {
           // Edge rendering
-          ctx.strokeStyle = Globals.edgeColor
+          let edgeGradient = 
+            ctx.createLinearGradient(pt1.x, pt1.y, pt2.x, pt2.y)
+          edgeGradient.addColorStop("0", Globals.edgeBeginColor);
+          edgeGradient.addColorStop("1.0", Globals.edgeEndColor);
+          ctx.strokeStyle = edgeGradient
           ctx.lineWidth = Globals.edgeThickness
           ctx.beginPath()
           ctx.moveTo(pt1.x, pt1.y)
@@ -74,9 +62,6 @@ export default function ($, canvasID, methods) {
         })
 
         particleSystem.eachNode(function (node, pt) {
-          // node: {mass:#, p:{x,y}, name:"", data:{}}
-          // pt:   {x:#, y:#}  node position in screen coords
-
           // Node text
           let text = "node " + node.name
           let textParams = Globals.textSize + "px " + Globals.textFont
@@ -114,7 +99,6 @@ export default function ($, canvasID, methods) {
             shape.y + Globals.textSize + Globals.verticalPadding - 2.0 /* I have no ideia why, but this 2 makes everything ok*/)
         })
       },
-
       initMouseHandling: function () {
         // no-nonsense drag and drop (thanks springy.js)
         var dragged = null;
@@ -135,8 +119,6 @@ export default function ($, canvasID, methods) {
 
             $(canvas).bind('mousemove', handler.dragged)
             $(window).bind('mouseup', handler.dropped)
-
-            methods.fuckYou()
 
             return false
           },
@@ -168,20 +150,12 @@ export default function ($, canvasID, methods) {
         $(canvas).mousedown(handler.clicked);
 
       },
-      getContainerSize: () => {
-
-      },
-      resizer: () => {
-        $(window)
-          .resize(() => {
-            console.log('resize')
-            let width = $('#graph').innerWidth()
-            let height = $('#graph').innerHeight()
-            console.log('width:',width,' height:',height)
-            canvas.style.width = width + 'px';
-            canvas.style.height = height + 'px';
-            particleSystem.screenSize(width, height)
-          })
+      resize: () => {
+        let width = $('#graph').innerWidth()
+        let height = $('#graph').innerHeight()
+        canvas.width = width;
+        canvas.height = height;
+        particleSystem.screenSize(width, height)
       }
     }
     return that
@@ -195,10 +169,6 @@ export default function ($, canvasID, methods) {
     sys = arbor.ParticleSystem(30, 0, 0) // create the system with sensible repulsion/stiffness/friction
     sys.parameters({ gravity: true }) // use center-gravity to make the graph settle nicely (ymmv)
     sys.renderer = Renderer("#" + canvasID) // our newly created renderer will have its .init() method called shortly by sys...
-    sys.renderer.resizer()
-
-    // Auto resizer to div
-
 
     // add some nodes to the graph and watch it go...
     sys.addEdge('a', 'b')

@@ -6,22 +6,22 @@
     <hr/>
     <div class="row pl-3 pr-3 text-secondary">
       <font-awesome-icon
-        :class="'col-4 mt-1 text-' + (thumb === 1 ? 'success' : 'secondary')"
-        size="lg"
+        :class="'col-4 mt-2 text-' + (thumb === 1 ? 'success' : 'secondary')"
+        size="md"
         icon="thumbs-up"
         @click="thumbsUp"/>
       <div class="col-4 text-center mt-1 unselectable">
         {{ votes >= 0 ? '+' + votes : votes }}
       </div>
       <font-awesome-icon
-        :class="'col-4 mt-1 text-' + (thumb === -1 ? 'danger' : 'secondary')"
-        size="lg"
+        :class="'col-4 mt-2 text-' + (thumb === -1 ? 'danger' : 'secondary')"
+        size="md"
         icon="thumbs-down"
         @click="thumbsDown"/>
     </div>
     <hr/>
     <div class="text-center mt-1">
-      <h6 class="text-muted">Learn more about Node</h6>
+      <h6 class="text-muted">References for Node</h6>
       <ul class="text-left list-group">
         <li v-for="font in fonts" :key="font.title" class="list-group-item">
           <a v-if="font.link" :href="font.link">
@@ -47,18 +47,45 @@
       </ul>
     </div>
     <hr/>
-    <div class="row pl-3 pr-3 mt-1">
-      <button class="col mr-1 btn btn-primary">Move</button>
-      <button class="col btn btn-danger">Report</button>
+    <div class="col">
+      <div class="row mt-1">
+        <div class="col-3">
+          <button class="col mr-1 btn btn-primary">Connect</button>
+        </div>
+        <div class="col-9 mt-2">
+          Connect this node with another node
+        </div>
+      </div>
+      <div class="row mt-1">
+        <div class="col-3">
+          <button class="col btn btn-primary">Edit</button>
+        </div>
+        <div class="col-9 mt-2">
+          Connect this node with another node
+        </div>
+      </div>
+      <div class="row mt-1">
+        <div class="col-3">
+          <button class="col btn mr-1 btn-primary">Add Topic</button>
+        </div>
+        <div class="col-9 mt-2">
+          Connect this node with another node
+        </div>
+      </div>
+      <div class="row mt-1">
+        <div class="col-3">
+          <button class="col btn btn-primary" @click="$emit('createNewNode')">
+           Add random
+          </button>
+        </div>
+        <div class="col-9 mt-2">
+          Adds a random node to A
+        </div>
+      </div>
     </div>
-    <div class="row pl-3 pr-3 mt-1">
-      <button class="col btn mr-1 btn-primary">Add Topic</button>
-      <button class="col btn btn-primary">Edit</button>
-    </div>
-    <div class="row px-3 mt-1">
-      <button class="col btn btn-primary" @click="$emit('createNewNode')">
-        Select random node
-      </button>
+    <hr>
+    <div class="row px-5 mt-1">
+      <button class="col btn btn-danger">Report this node</button>
     </div>
   </div>
 </template>
@@ -80,6 +107,8 @@ export default {
       ]
     }
   },
+  query (id) {},
+  report () {},
   methods: {
     thumbsUp () {
       if (this.thumb === 1) {

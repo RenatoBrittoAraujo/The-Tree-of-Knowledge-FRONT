@@ -4,11 +4,12 @@
       class="row"/>
     <div class="row section">
       <Graph class="col-7 graph" id="graph" ref="graph" />
-      <NodeDigest v-if="sidePage == 'NodeDigest'"
-        class="col-5 bg-light wrapper"
-        v-on:createNewNode="createNewNode"/>
-      <About v-else-if="sidePage == 'About'"
-        class="col-5 bg-light wrapper"/>
+      <div class="wrapper col-5 bg-light border">
+        <NodeDigest v-if="sidePage == 'NodeDigest'"
+          v-on:createNewNode="createNewNode"/>
+        <About v-else-if="sidePage == 'About'"/>
+        <Rules v-else-if="sidePage == 'Rules'"/>
+      </div>
     </div>
   </div>
 </template>
@@ -18,13 +19,15 @@ import Header from '@/components/Header'
 import Graph from '@/components/Graph'
 import NodeDigest from '@/components/NodeDigest'
 import About from '@/components/About'
+import Rules from '@/components/Rules'
 
 export default {
   components: {
     Header,
     Graph,
     NodeDigest,
-    About
+    About,
+    Rules
   },
   methods: {
     createNewNode () {
@@ -68,7 +71,6 @@ html, body {
   min-height: 100%;
 }
 .graph {
-  background-color: red;
   flex-grow: 1;
   overflow: hidden;
   min-height: 100%;

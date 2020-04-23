@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark px-4">
     <a class="navbar-brand" href="#"
       @click="$emit('sidePageChange', 'NodeDigest')">The Tree of Knowledge</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -8,11 +8,29 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-link">
-          <a class="nav-link" href="#about" @click="$emit('sidePageChange', 'About')">About</a>
+          <a class="nav-link"
+            href="#about"
+            @click="$emit('sidePageChange', 'About')">
+            About
+          </a>
+        </li>
+        <li class="nav-link">
+          <a class="nav-link"
+            href="#about"
+            @click="$emit('randomNode')">
+            Random
+          </a>
+        </li>
+        <li class="nav-link">
+          <a class="nav-link"
+            href="#rules"
+            @click="$emit('sidePageChange', 'Rules')">
+            Rules
+          </a>
         </li>
         <li class="nav-link">
           <a class="nav-link" href="#users">
-            <font-awesome-icon icon="user-circle" size="lg"/>
+            <font-awesome-icon icon="user-circle" size="md"/>
           </a>
         </li>
       </ul>

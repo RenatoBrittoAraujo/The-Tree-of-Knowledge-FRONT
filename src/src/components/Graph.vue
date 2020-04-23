@@ -21,11 +21,7 @@ export default {
   },
   methods: {
     selectRandomNode () {
-      // this.canvas.increaseFontSize()
       this.canvas.addNode()
-    },
-    fuckYou () {
-      console.log('Fuck you indeed')
     },
     runGraph () {
       this.canvas = main(window.$, this.canvasID, this)
