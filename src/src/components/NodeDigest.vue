@@ -7,7 +7,7 @@
     <div class="row pl-3 pr-3 text-secondary">
       <font-awesome-icon
         :class="'col-4 mt-2 text-' + (thumb === 1 ? 'success' : 'secondary')"
-        size="md"
+        size="1x"
         icon="thumbs-up"
         @click="thumbsUp"/>
       <div class="col-4 text-center mt-1 unselectable">
@@ -15,13 +15,22 @@
       </div>
       <font-awesome-icon
         :class="'col-4 mt-2 text-' + (thumb === -1 ? 'danger' : 'secondary')"
-        size="md"
+        size="1x"
         icon="thumbs-down"
         @click="thumbsDown"/>
     </div>
     <hr/>
     <div class="text-center mt-1">
-      <h6 class="text-muted">References for {{ title }}</h6>
+      <div class="row">
+        <h6 class="text-muted text-left col-10">References for {{ title }}</h6>
+        <div class="col-2">
+          <font-awesome-icon
+            size="1x"
+            icon="plus"
+            class="text-muted text-right"
+            @click="newRef"/>
+        </div>
+      </div>
       <ul class="text-left list-group">
         <li v-for="font in fonts" :key="font.title" class="list-group-item">
           <a v-if="font.link" :href="font.link">
@@ -50,26 +59,10 @@
     <div class="col">
       <div class="row mt-1">
         <div class="col-3">
-          <button class="col mr-1 btn btn-primary">Open</button>
-        </div>
-        <div class="col-9 mt-2">
-          Open the children of this node
-        </div>
-      </div>
-      <div class="row mt-1">
-        <div class="col-3">
-          <button class="col mr-1 btn btn-primary">Connect</button>
-        </div>
-        <div class="col-9 mt-2">
-          Connect this node with another node
-        </div>
-      </div>
-      <div class="row mt-1">
-        <div class="col-3">
           <button class="col btn btn-primary">Edit</button>
         </div>
         <div class="col-9 mt-2">
-          Edit the information inside this node
+          Edit the information of this node
         </div>
       </div>
       <div class="row mt-1">
@@ -80,19 +73,9 @@
           Add a child node to this node
         </div>
       </div>
-      <div class="row mt-1">
-        <div class="col-3">
-          <button class="col btn btn-primary" @click="$emit('createNewNode')">
-           Add random
-          </button>
-        </div>
-        <div class="col-9 mt-2">
-          Adds a random node to this
-        </div>
-      </div>
     </div>
     <hr>
-    <div class="row px-5 mt-1">
+    <div class="row px-5 mt-1 mb-3">
       <button class="col btn btn-danger">Report this node</button>
     </div>
   </div>
@@ -140,6 +123,8 @@ export default {
         this.votes -= 1 + this.thumb
         this.thumb = -1
       }
+    },
+    newRef () {
     }
   }
 }

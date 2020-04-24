@@ -5,14 +5,16 @@ import {
   faUser,
   faSearch, faUserCircle,
   faThumbsUp, faThumbsDown,
-  faArrowLeft
+  faArrowLeft,
+  faPlus
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
   faUser,
   faSearch, faUserCircle,
   faThumbsUp, faThumbsDown,
-  faArrowLeft
+  faArrowLeft,
+  faPlus
 )
 
 export default FontAwesomeIcon

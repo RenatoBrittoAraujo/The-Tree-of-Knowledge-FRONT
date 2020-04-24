@@ -208,6 +208,7 @@ export default function ($, canvasID, methods) {
         canvas.width = width;
         canvas.height = height;
         particleSystem.screenSize(width, height)
+        that.redraw()
       }
     }
     return that

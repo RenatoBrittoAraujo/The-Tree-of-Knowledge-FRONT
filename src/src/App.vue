@@ -10,7 +10,7 @@
             @click="Gunselect"
             v-if="sideBarQueue.length > 1">
           <font-awesome-icon
-            class="mt-3 ml-2" icon="arrow-left" size="md"/>
+            class="mt-3 ml-2" icon="arrow-left" size="1x"/>
         </div>
         <NodeDigest v-if="topPage() == 'NodeDigest'"
           ref="nd"

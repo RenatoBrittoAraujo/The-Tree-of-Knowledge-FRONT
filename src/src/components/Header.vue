@@ -29,7 +29,7 @@
         </li>
         <li class="nav-link">
           <a class="nav-link" href="#users">
-            <font-awesome-icon icon="user-circle" size="md"/>
+            <font-awesome-icon icon="user-circle" size="1x"/>
           </a>
         </li>
       </ul>
