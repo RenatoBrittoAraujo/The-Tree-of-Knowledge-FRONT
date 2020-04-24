@@ -44,17 +44,19 @@ export default {
     createNewNode () {
       this.$refs.graph.selectRandomNode()
     },
-    sidePageChange (page) {
-      this.sidePage = page
+    async sidePageChange (pageObj) {
+      if (this.topPage() === 'NodeDigest' &&
+          pageObj.page !== 'NodeDigest') {
+        this.$refs.graph.unselect()
+      }
+      await this.sideBarQueue.push(pageObj)
     },
     topPage () {
       return this.sideBarQueue[this.sideBarQueue.length - 1].page
     },
-    Gunselect () {
-      this.sideBarQueue.pop()
-      console.log('after pop', this.sideBarQueue)
+    async Gunselect () {
+      await this.sideBarQueue.pop()
       if (this.topPage() !== 'NodeDigest') {
-        console.log('app -> graph unlect')
         this.$refs.graph.unselect()
       }
       if (this.topPage() === 'NodeDigest') {
@@ -62,12 +64,9 @@ export default {
         this.$refs.nd.select(name)
         this.$refs.graph.select(name)
       }
-      console.log('queue:', this.sideBarQueue)
     },
     async select (name) {
-      console.log('select called')
       await this.sideBarQueue.push({ page: 'NodeDigest', name: name })
-      console.log('queue:', this.sideBarQueue)
       this.$refs.nd.select(name)
     }
   },

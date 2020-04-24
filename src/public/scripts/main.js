@@ -49,40 +49,25 @@ export default function ($, canvasID, methods) {
       selected.node.addData('selected', true)
       methods.NDselect(selected.node.name)
     }
-    var unselectNode = function () {
-      if (selected) {
-        selected.node.addData('selected', false)
-      }
-      selected = null
-    }
     
     /* Returned as rendering object */
     
     var that = {
       select: function (newSelected) {
-        particleSystem.eachNode((node, pt) => {
-          particleSystem.getNode(node.name)
-            .addData('selected', false)
-        })
-        selected = false
-        console.log('select in main.js')
-        console.log('search', newSelected)
-        particleSystem.eachNode((node, pt) => {
-          console.log(node.name)
-          if (node.name == newSelected) {
-            let ballls = particleSystem.getNode(node.name)
-            ballls.addData('selected', true)
-            selected = {node: ballls}
-            console.log('found')
-            return
-          }
-        })
+        that.unselect()
+        if (particleSystem.getNode(newSelected)) {
+          particleSystem.getNode(newSelected)
+              .addData('selected', true)
+          selected = { node: particleSystem.getNode(newSelected) }
+        }
+        that.redraw()
       },
       unselect: function () {
-        particleSystem.eachNode((node, pt) => {
-          particleSystem.getNode(node.name)
-            .addData('selected', false)
-        })
+        if (selected) {
+          selected.node.addData('selected', false)
+          selected = null
+        }
+        that.redraw()
       },
       /* Initializer rendering */
       init: function (system) {

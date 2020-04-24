@@ -117,7 +117,6 @@ export default {
   },
   methods: {
     select (name) {
-      console.log('nd select', name)
       this.title = name
     },
     query (id) {},

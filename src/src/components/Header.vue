@@ -1,7 +1,6 @@
 <template>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark px-4">
-    <a class="navbar-brand" href="#"
-      @click="$emit('sidePageChange', 'NodeDigest')">The Tree of Knowledge</a>
+    <a class="navbar-brand" href="#">The Tree of Knowledge</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -10,7 +9,7 @@
         <li class="nav-link">
           <a class="nav-link"
             href="#about"
-            @click="$emit('sidePageChange', 'About')">
+            @click="$emit('sidePageChange', { page: 'About' })">
             About
           </a>
         </li>
@@ -24,7 +23,7 @@
         <li class="nav-link">
           <a class="nav-link"
             href="#rules"
-            @click="$emit('sidePageChange', 'Rules')">
+            @click="$emit('sidePageChange', { page: 'Rules' } )">
             Rules
           </a>
         </li>
