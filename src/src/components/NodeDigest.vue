@@ -1,6 +1,6 @@
 <template>
   <div class="p-2">
-    <h3 class="text-center mt-1">Node</h3>
+    <h3 class="text-center mt-1">{{ title }}</h3>
     <hr/>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
     <hr/>
@@ -21,7 +21,7 @@
     </div>
     <hr/>
     <div class="text-center mt-1">
-      <h6 class="text-muted">References for Node</h6>
+      <h6 class="text-muted">References for {{ title }}</h6>
       <ul class="text-left list-group">
         <li v-for="font in fonts" :key="font.title" class="list-group-item">
           <a v-if="font.link" :href="font.link">
@@ -50,6 +50,14 @@
     <div class="col">
       <div class="row mt-1">
         <div class="col-3">
+          <button class="col mr-1 btn btn-primary">Open</button>
+        </div>
+        <div class="col-9 mt-2">
+          Open the children of this node
+        </div>
+      </div>
+      <div class="row mt-1">
+        <div class="col-3">
           <button class="col mr-1 btn btn-primary">Connect</button>
         </div>
         <div class="col-9 mt-2">
@@ -61,7 +69,7 @@
           <button class="col btn btn-primary">Edit</button>
         </div>
         <div class="col-9 mt-2">
-          Connect this node with another node
+          Edit the information inside this node
         </div>
       </div>
       <div class="row mt-1">
@@ -69,7 +77,7 @@
           <button class="col btn mr-1 btn-primary">Add Topic</button>
         </div>
         <div class="col-9 mt-2">
-          Connect this node with another node
+          Add a child node to this node
         </div>
       </div>
       <div class="row mt-1">
@@ -79,7 +87,7 @@
           </button>
         </div>
         <div class="col-9 mt-2">
-          Adds a random node to A
+          Adds a random node to this
         </div>
       </div>
     </div>
@@ -107,9 +115,15 @@ export default {
       ]
     }
   },
-  query (id) {},
-  report () {},
   methods: {
+    select (name) {
+      console.log('nd select', name)
+      this.title = name
+    },
+    query (id) {},
+    report () {},
+    popPage () {},
+    addPage (obj) {},
     thumbsUp () {
       if (this.thumb === 1) {
         this.votes--

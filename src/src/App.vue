@@ -3,12 +3,21 @@
     <Header v-on:sidePageChange="sidePageChange"
       class="row"/>
     <div class="row section">
-      <Graph class="col-7 graph" id="graph" ref="graph" />
+      <Graph class="col-7 graph" id="graph" ref="graph"
+        v-on:select="select"/>
       <div class="wrapper col-5 bg-light border">
-        <NodeDigest v-if="sidePage == 'NodeDigest'"
+        <div
+            @click="Gunselect"
+            v-if="sideBarQueue.length > 1">
+          <font-awesome-icon
+            class="mt-3 ml-2" icon="arrow-left" size="md"/>
+        </div>
+        <NodeDigest v-if="topPage() == 'NodeDigest'"
+          ref="nd"
           v-on:createNewNode="createNewNode"/>
-        <About v-else-if="sidePage == 'About'"/>
-        <Rules v-else-if="sidePage == 'Rules'"/>
+        <About v-else-if="topPage() == 'About'"/>
+        <Rules v-else-if="topPage() == 'Rules'"/>
+        <HelpDigest v-else-if="topPage() == 'HelpDigest'"/>
       </div>
     </div>
   </div>
@@ -20,6 +29,7 @@ import Graph from '@/components/Graph'
 import NodeDigest from '@/components/NodeDigest'
 import About from '@/components/About'
 import Rules from '@/components/Rules'
+import HelpDigest from '@/components/HelpDigest'
 
 export default {
   components: {
@@ -27,7 +37,8 @@ export default {
     Graph,
     NodeDigest,
     About,
-    Rules
+    Rules,
+    HelpDigest
   },
   methods: {
     createNewNode () {
@@ -35,11 +46,34 @@ export default {
     },
     sidePageChange (page) {
       this.sidePage = page
+    },
+    topPage () {
+      return this.sideBarQueue[this.sideBarQueue.length - 1].page
+    },
+    Gunselect () {
+      this.sideBarQueue.pop()
+      console.log('after pop', this.sideBarQueue)
+      if (this.topPage() !== 'NodeDigest') {
+        console.log('app -> graph unlect')
+        this.$refs.graph.unselect()
+      }
+      if (this.topPage() === 'NodeDigest') {
+        const name = this.sideBarQueue[this.sideBarQueue.length - 1].name
+        this.$refs.nd.select(name)
+        this.$refs.graph.select(name)
+      }
+      console.log('queue:', this.sideBarQueue)
+    },
+    async select (name) {
+      console.log('select called')
+      await this.sideBarQueue.push({ page: 'NodeDigest', name: name })
+      console.log('queue:', this.sideBarQueue)
+      this.$refs.nd.select(name)
     }
   },
   data () {
     return {
-      sidePage: 'NodeDigest'
+      sideBarQueue: [{ page: 'HelpDigest' }]
     }
   }
 }

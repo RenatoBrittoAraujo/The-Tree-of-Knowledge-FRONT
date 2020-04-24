@@ -1,13 +1,20 @@
 /* eslint-disable */
-export default function ($, canvasID, methods) {
 
+/* When imported, this functions handles the graph visualization 
+  in a given window canvas, parameters are:
+  $: widown jquery reference
+  canvasID: the literal id of the html canvas element
+  methods: reference to the methods of the vue component holding the canvas */
+export default function ($, canvasID, methods) {
   // Params for graph rendering
   var Globals = {
-    // Globals params
+    // Globals canvas params
     backgroundColor: "white",
+    screenPadding: 80,
 
     // Edge params
     edgeThickness: 2,
+    
     edgeBeginColor: "rgba(0,0,0, .8)",
     edgeEndColor: "rgba(220,220,220, .8)",
 
@@ -27,7 +34,57 @@ export default function ($, canvasID, methods) {
     var ctx = canvas.getContext("2d");
     var particleSystem
 
+    var selected = null
+    var selectNode = function (newSelected) {
+      if (selected && selected.node.name == newSelected.node.name) {
+        selected.node.addData('selected', false)
+        selected = null
+        methods.NDunselect()
+        return
+      }
+      if (selected) {
+        selected.node.addData('selected', false)
+      }
+      selected = newSelected
+      selected.node.addData('selected', true)
+      methods.NDselect(selected.node.name)
+    }
+    var unselectNode = function () {
+      if (selected) {
+        selected.node.addData('selected', false)
+      }
+      selected = null
+    }
+    
+    /* Returned as rendering object */
+    
     var that = {
+      select: function (newSelected) {
+        particleSystem.eachNode((node, pt) => {
+          particleSystem.getNode(node.name)
+            .addData('selected', false)
+        })
+        selected = false
+        console.log('select in main.js')
+        console.log('search', newSelected)
+        particleSystem.eachNode((node, pt) => {
+          console.log(node.name)
+          if (node.name == newSelected) {
+            let ballls = particleSystem.getNode(node.name)
+            ballls.addData('selected', true)
+            selected = {node: ballls}
+            console.log('found')
+            return
+          }
+        })
+      },
+      unselect: function () {
+        particleSystem.eachNode((node, pt) => {
+          particleSystem.getNode(node.name)
+            .addData('selected', false)
+        })
+      },
+      /* Initializer rendering */
       init: function (system) {
         particleSystem = system
         let resizer = this.resize
@@ -36,9 +93,10 @@ export default function ($, canvasID, methods) {
           .resize(() => {
             resizer()
           })
-        particleSystem.screenPadding(80)
+        particleSystem.screenPadding(Globals.screenPadding)
         that.initMouseHandling()
       },
+      /* Called many times to re-render the entire canvas */
       redraw: function () {
         ctx.fillStyle = Globals.backgroundColor
         ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -74,7 +132,7 @@ export default function ($, canvasID, methods) {
             w: textWidth + 2.0 * Globals.horizontalPadding,
             h: Globals.textSize + 2.0 * Globals.verticalPadding
           }
-          ctx.fillStyle = (node.data.alone) ? 
+          ctx.fillStyle = (node.getData('selected')) ? 
             Globals.activeColor : Globals.inactiveColor
           let radius = Globals.verticalPadding + Globals.textSize / 2.0
           let cy = shape.y + Globals.verticalPadding + Globals.textSize / 2.0
@@ -99,13 +157,12 @@ export default function ($, canvasID, methods) {
             shape.y + Globals.textSize + Globals.verticalPadding - 2.0 /* I have no ideia why, but this 2 makes everything ok*/)
         })
       },
+      /* Initializes mouse handling funcionalities */
       initMouseHandling: function () {
-        // no-nonsense drag and drop (thanks springy.js)
         var dragged = null;
         var _mouseP = null;
+        var moved = false;
 
-        // set up a handler object that will initially listen for mousedowns then
-        // for moves and mouseups while dragging
         var handler = {
           clicked: function (e) {
             var pos = $(canvas).offset();
@@ -113,30 +170,40 @@ export default function ($, canvasID, methods) {
             dragged = particleSystem.nearest(_mouseP);
             
             if (dragged && dragged.node !== null) {
-              // while we're dragging, don't let physics move the node
               dragged.node.fixed = true
             }
-
+            moved = false
             $(canvas).bind('mousemove', handler.dragged)
             $(window).bind('mouseup', handler.dropped)
-
+            return false
+          },
+          doubleclick: function (e) {
+            var pos = $(canvas).offset();
+            var _mouseP = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
+            var particle = particleSystem.nearest(_mouseP);
+            if (particle && particle.node !== null) {
+              methods.queryNode(particle.node.name)
+            }
             return false
           },
           dragged: function (e) {
+            moved = true
             var pos = $(canvas).offset();
             var s = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
-
             if (dragged && dragged.node !== null) {
               var p = particleSystem.fromScreen(s)
               dragged.node.p = p
             }
-
             return false
           },
-
           dropped: function (e) {
             if (dragged === null || dragged.node === undefined) return
             if (dragged.node !== null) dragged.node.fixed = false
+            if (!moved) {
+              selectNode(dragged)
+            } else {
+              moved = false
+            }
             dragged.node.tempMass = 1000
             dragged = null
             $(canvas).unbind('mousemove', handler.dragged)
@@ -146,10 +213,10 @@ export default function ($, canvasID, methods) {
           }
         }
 
-        // start listening
-        $(canvas).mousedown(handler.clicked);
-
+        $(canvas).mousedown(handler.clicked)
+        $(canvas).dblclick(handler.doubleclick)
       },
+      /* Resizes renderer to canvas size */
       resize: () => {
         let width = $('#graph').innerWidth()
         let height = $('#graph').innerHeight()
@@ -166,22 +233,33 @@ export default function ($, canvasID, methods) {
   var increaseFontSize = () => { Globals.textSize++ }
 
   var init = () => {
-    sys = arbor.ParticleSystem(30, 0, 0) // create the system with sensible repulsion/stiffness/friction
-    sys.parameters({ gravity: true }) // use center-gravity to make the graph settle nicely (ymmv)
-    sys.renderer = Renderer("#" + canvasID) // our newly created renderer will have its .init() method called shortly by sys...
+    sys = arbor.ParticleSystem(30, 0, 0)
+    sys.parameters({ gravity: true })
+    sys.renderer = Renderer("#" + canvasID)
 
-    // add some nodes to the graph and watch it go...
     sys.addEdge('a', 'b')
   
   }
 
-  var addNode = () => {
-    sys.addEdge('a', Math.random().toFixed(2))
+  var addNode = (to, name) => {
+    sys.addEdge(to, name)
   }
 
+  var unselect = () => {
+    sys.renderer.unselect()
+  }
+
+  var select = (name) => {
+    sys.renderer.select(name)
+  }
+
+  /* These are functions accessible from the vue component Graph,
+     they are used to communicate with the canvas */
   return {
     init,
     increaseFontSize,
-    addNode
+    addNode,
+    unselect,
+    select
   }
 }
