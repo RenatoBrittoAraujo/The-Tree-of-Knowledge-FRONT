@@ -14,7 +14,9 @@
         </div>
         <NodeDigest v-if="topPage() == 'NodeDigest'"
           ref="nd"
-          v-on:createNewNode="createNewNode"/>
+          v-on:createNewNode="createNewNode"
+          v-on:sidePageChange="sidePageChange"
+          v-on:newNode="newNode"/>
         <About v-else-if="topPage() == 'About'"/>
         <Rules v-else-if="topPage() == 'Rules'"/>
         <HelpDigest v-else-if="topPage() == 'HelpDigest'"/>
@@ -27,9 +29,9 @@
 import Header from '@/components/Header'
 import Graph from '@/components/Graph'
 import NodeDigest from '@/components/NodeDigest'
-import About from '@/components/About'
-import Rules from '@/components/Rules'
-import HelpDigest from '@/components/HelpDigest'
+import About from '@/components/staticPages/About'
+import Rules from '@/components/staticPages/Rules'
+import HelpDigest from '@/components/staticPages/HelpDigest'
 
 export default {
   components: {
@@ -68,6 +70,9 @@ export default {
     async select (name) {
       await this.sideBarQueue.push({ page: 'NodeDigest', name: name })
       this.$refs.nd.select(name)
+    },
+    newNode (obj) {
+      this.$refs.graph.newNode(obj)
     }
   },
   data () {

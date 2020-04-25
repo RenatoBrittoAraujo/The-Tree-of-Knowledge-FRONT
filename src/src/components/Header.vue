@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark px-4">
-    <a class="navbar-brand" href="#">The Tree of Knowledge</a>
+    <a class="navbar-brand">The Tree of Knowledge</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>

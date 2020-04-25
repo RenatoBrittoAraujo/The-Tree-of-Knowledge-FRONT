@@ -105,41 +105,44 @@ export default function ($, canvasID, methods) {
         })
 
         particleSystem.eachNode(function (node, pt) {
-          // Node text
-          let text = "node " + node.name
-          let textParams = Globals.textSize + "px " + Globals.textFont
-          
-          // Node rendering
-          let textWidth = ctx.measureText(text).width
-          let shape = {
-            x: pt.x - textWidth / 2.0 - Globals.horizontalPadding,
-            y: pt.y - Globals.textSize / 2.0 - Globals.verticalPadding,
-            w: textWidth + 2.0 * Globals.horizontalPadding,
-            h: Globals.textSize + 2.0 * Globals.verticalPadding
+          if (!node.data.hidden) {
+            // Node text
+            let text = node.name
+            let textParams = Globals.textSize + "px " + Globals.textFont
+            
+            // Node rendering
+            let textWidth = ctx.measureText(text).width
+            let shape = {
+              x: pt.x - textWidth / 2.0 - Globals.horizontalPadding,
+              y: pt.y - Globals.textSize / 2.0 - Globals.verticalPadding,
+              w: textWidth + 2.0 * Globals.horizontalPadding,
+              h: Globals.textSize + 2.0 * Globals.verticalPadding
+            }
+
+            ctx.fillStyle = (node.getData('selected')) ? 
+              Globals.activeColor : Globals.inactiveColor
+            let radius = Globals.verticalPadding + Globals.textSize / 2.0
+            let cy = shape.y + Globals.verticalPadding + Globals.textSize / 2.0
+            let firstCX = shape.x + radius
+            let secondCX = shape.x + shape.w - radius
+            ctx.beginPath()
+            // Left circle
+            ctx.arc(firstCX, cy, radius, 0, 2.0 * Math.PI);
+            ctx.fill()
+            // Right circle
+            ctx.arc(secondCX, cy, radius, 0, 2.0 * Math.PI);
+            ctx.fill()
+            // Middle rect
+            ctx.fillRect(shape.x + radius, shape.y, shape.w - 2.0 * radius, shape.h)
+            
+
+            // Font rendering
+            ctx.font = textParams
+            ctx.fillStyle = Globals.textColor
+            ctx.fillText(text, 
+              shape.x + Globals.horizontalPadding, 
+              shape.y + Globals.textSize + Globals.verticalPadding - 2.0 /* I have no ideia why, but this 2 makes everything ok*/)
           }
-          ctx.fillStyle = (node.getData('selected')) ? 
-            Globals.activeColor : Globals.inactiveColor
-          let radius = Globals.verticalPadding + Globals.textSize / 2.0
-          let cy = shape.y + Globals.verticalPadding + Globals.textSize / 2.0
-          let firstCX = shape.x + radius
-          let secondCX = shape.x + shape.w - radius
-          ctx.beginPath()
-          // Left circle
-          ctx.arc(firstCX, cy, radius, 0, 2.0 * Math.PI);
-          ctx.fill()
-          // Right circle
-          ctx.arc(secondCX, cy, radius, 0, 2.0 * Math.PI);
-          ctx.fill()
-          // Middle rect
-          ctx.fillRect(shape.x + radius, shape.y, shape.w - 2.0 * radius, shape.h)
-
-
-          // Font rendering
-          ctx.font = textParams
-          ctx.fillStyle = Globals.textColor
-          ctx.fillText(text, 
-            shape.x + Globals.horizontalPadding, 
-            shape.y + Globals.textSize + Globals.verticalPadding - 2.0 /* I have no ideia why, but this 2 makes everything ok*/)
         })
       },
       /* Initializes mouse handling funcionalities */
@@ -216,19 +219,30 @@ export default function ($, canvasID, methods) {
 
   var sys
 
-  var increaseFontSize = () => { Globals.textSize++ }
+  var baseNode = null
 
-  var init = () => {
-    sys = arbor.ParticleSystem(30, 0, 0)
+  var init = (name) => {
+    sys = arbor.ParticleSystem(1, 0, 0)
     sys.parameters({ gravity: true })
     sys.renderer = Renderer("#" + canvasID)
 
-    sys.addEdge('a', 'b')
-  
+    sys.addNode('a' || name)
+    sys.addNode('hiddenNode69420pleasedontcrash', { hidden: true })
+    /* WARNING: for some reason, arbor crashed when you try
+       to add a new node later if in this init function you
+       only declare one single node. I have no ideia why,
+       I tried fixing this and gave up after 2 whole days
+       on this issue. The best solution is to just create 
+       a hidden node and set the renderer to node even
+       consider it when redering. As long as nobody uses
+       that ridiculous name, rendering is safe */
   }
 
-  var addNode = (to, name) => {
-    sys.addEdge(to, name)
+  var addNode = (from, name) => {
+    sys.addNode(name)
+    if (from) {
+      sys.addEdge(from, name)
+    }
   }
 
   var unselect = () => {
@@ -243,7 +257,6 @@ export default function ($, canvasID, methods) {
      they are used to communicate with the canvas */
   return {
     init,
-    increaseFontSize,
     addNode,
     unselect,
     select
