@@ -170,7 +170,19 @@ export default function ($, canvasID, methods) {
             var _mouseP = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
             var particle = particleSystem.nearest(_mouseP);
             if (particle && particle.node !== null) {
-              methods.queryNode(particle.node.name)
+              if (particleSystem.getNode(particle.node.name)
+                .getData('expanded')) {
+                let edges = particleSystem.getEdgesFrom(particle.node.name)
+                for (let edge of edges) {
+                  particleSystem.pruneNode(edge.target.name)
+                }
+                particleSystem.getNode(particle.node.name)
+                  .addData('expanded', null)
+              } else {
+                methods.queryNode(particle.node.name)
+                particleSystem.getNode(particle.node.name)
+                  .addData('expanded', true)
+              }
             }
             return false
           },
