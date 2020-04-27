@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-4">
     <div class="text-center text-muted bg-light p-1">
       Make sure to read the
       <a href="#rules"
@@ -33,6 +33,11 @@ export default {
     return {
       email: '',
       password: ''
+    }
+  },
+  methods: {
+    register () {
+      console.log('registerUser', this.email, this.password)
     }
   }
 }

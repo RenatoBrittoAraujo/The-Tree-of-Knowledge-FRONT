@@ -19,10 +19,15 @@
           v-on:newNode="newNode"/>
         <About v-else-if="topPage() == 'About'"/>
         <Rules v-else-if="topPage() == 'Rules'"/>
-        <HelpDigest v-else-if="topPage() == 'HelpDigest'"/>
-        <UserDigest v-else-if="topPage() == 'UserDigest'"
+        <HelpDigest v-else-if="topPage() == 'HelpDigest'"
           v-on:sidePageChange="sidePageChange"/>
+        <UserDigest v-else-if="topPage() == 'UserDigest'"
+          v-on:sidePageChange="sidePageChange"
+          v-on:popSidePage="popSidePage"/>
         <AccountShow v-else-if="topPage() == 'AccountShow'" ref="accountshow"/>
+        <Register v-else-if="topPage() == 'Register'"
+          v-on:sidePageChange="sidePageChange"/>
+        <Login v-else-if="topPage() == 'Login'"/>
       </div>
     </div>
   </div>
@@ -37,6 +42,8 @@ import Rules from '@/components/staticPages/Rules'
 import HelpDigest from '@/components/staticPages/HelpDigest'
 import UserDigest from '@/components/users/UserDigest'
 import AccountShow from '@/components/users/AccountShow'
+import Register from '@/components/users/Register'
+import Login from '@/components/users/Login'
 
 export default {
   components: {
@@ -47,23 +54,26 @@ export default {
     Rules,
     HelpDigest,
     UserDigest,
-    AccountShow
+    AccountShow,
+    Login,
+    Register
   },
   methods: {
     createNewNode () {
       this.$refs.graph.selectRandomNode()
     },
     async sidePageChange (pageObj) {
-      console.log('sidepagechange', pageObj)
       if (this.topPage() === 'NodeDigest' &&
           pageObj.page !== 'NodeDigest') {
         this.$refs.graph.unselect()
       }
       await this.sideBarQueue.push(pageObj)
       if (this.topPage() === 'AccountShow') {
-        console.log(this.getTopPage().username)
         this.$refs.accountshow.setUser(this.getTopPage().username)
       }
+    },
+    async popSidePage () {
+      await this.sideBarQueue.pop()
     },
     topPage () {
       return this.sideBarQueue[this.sideBarQueue.length - 1].page

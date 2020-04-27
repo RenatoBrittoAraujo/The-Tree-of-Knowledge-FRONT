@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-4">
     <div class="form-group text-left">
       <label>Email:</label>
       <input type="text" class="form-control" v-model="email">
@@ -20,6 +20,11 @@ export default {
     return {
       email: '',
       password: ''
+    }
+  },
+  methods: {
+    login () {
+      console.log('loginUser', this.email, this.password)
     }
   }
 }

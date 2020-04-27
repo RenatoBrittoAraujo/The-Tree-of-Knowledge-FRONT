@@ -4,7 +4,8 @@
     <p class="text-muted">{{ bio }}</p>
     <div v-if="targetuserIsCurrentUser()">
       <button class="w-100 mt-1 btn btn-primary">Edit profile</button>
-      <button class="w-100 mt-2 btn btn-primary">Log out</button>
+      <button class="w-100 mt-2 btn btn-primary"
+        @click="logout">Log out</button>
     </div>
     <div v-else>
       <button class="w-100 mt-2 btn btn-danger">Report</button>
@@ -37,7 +38,7 @@ export default {
   },
   methods: {
     queryUser () {
-      console.log('query user', this.username)
+      console.log('queryUsername', this.username)
     },
     setUser (username) {
       this.username = username

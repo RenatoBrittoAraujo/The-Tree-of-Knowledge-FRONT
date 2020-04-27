@@ -1,4 +1,4 @@
-import axios from 'axios'
+// import axios from 'axios'
 
 var determineIP = function () {
 }
@@ -15,9 +15,11 @@ var authPUT = function () {
 var noauthGET = function () {
 }
 
-export default {
+var HTTP = {
   authGET,
   authPOST,
   authPUT,
   noauthGET
 }
+
+export default HTTP

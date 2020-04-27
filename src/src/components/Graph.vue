@@ -33,6 +33,7 @@ export default {
     },
     // Calls from canvas
     queryNode (name) {
+      console.log('queryNode', name)
       this.canvas.addNode(name, 'natin ' + natincounter)
       natincounter++
       this.canvas.addNode(name, 'natin ' + natincounter)
