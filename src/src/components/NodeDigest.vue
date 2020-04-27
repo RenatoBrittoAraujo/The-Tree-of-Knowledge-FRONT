@@ -76,6 +76,9 @@
   </div>
 <!-- PAGE CONTENT -->
     <h3 class="text-center mt-1">{{ title }}</h3>
+    <h6 class="text-center">Author: <a href="#"
+      @click="$emit('sidePageChange', { page: 'UserDigest', username: author })">
+      {{ author }}</a></h6>
     <hr/>
     <p>{{ body }}</p>
     <hr/>
@@ -126,6 +129,9 @@
               size="sm"
               icon="thumbs-down"
               @click="refThumbsDown(index)"/>
+            · by <a :href="'#'+reference.author"
+             @click="$emit('sidePageChange', { page: 'AccountShow', username: reference.author })">
+             {{ reference.author }} </a>
           </div>
         </li>
       </ul>
@@ -155,30 +161,24 @@
     </div>
     <hr>
     <div class="row px-5 mt-1 mb-3">
-      <button class="col btn btn-danger">Report this node</button>
+      <button class="col btn btn-danger">Report</button>
     </div>
   </div>
 </template>
 
 <script>
-// import FormModal from '@/components/forms/formModalBase.vue'
-
 export default {
-  components: {
-    // FormModal
-  },
-  mounted () {
-  },
   data () {
     return {
       thumb: 0,
       votes: 23,
       title: 'Discrete Mathematics',
       body: 'random body text',
+      author: 'cleber',
       references: [
-        { link: '/', title: 'Link', votes: 35, thumb: 0 },
-        { link: false, title: 'Book', votes: 7, thumb: 0 },
-        { link: false, title: 'Scientific paper', votes: -13, thumb: 0 }
+        { link: '/', title: 'Link', votes: 35, thumb: 0, author: 'cleber' },
+        { link: false, title: 'Book', votes: 7, thumb: 0, author: 'vitin' },
+        { link: false, title: 'Scientific paper', votes: -13, thumb: 0, author: '69pedrao' }
       ],
       refForm: { title: 'adawaad', isLink: false, link: '' },
       nodeForm: { title: '', body: '' }

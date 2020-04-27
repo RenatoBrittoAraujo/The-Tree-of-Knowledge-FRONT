@@ -28,7 +28,8 @@
           </a>
         </li>
         <li class="nav-link">
-          <a class="nav-link" href="#users">
+          <a class="nav-link" href="#users"
+            @click="$emit('sidePageChange', { page: 'UserDigest' })">
             <font-awesome-icon icon="user-circle" size="1x"/>
           </a>
         </li>
