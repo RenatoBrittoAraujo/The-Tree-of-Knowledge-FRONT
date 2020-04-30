@@ -12,11 +12,18 @@ import 'bootstrap'
 // font awesome icons import
 import FontAwesomeIcon from '@/libs/icons'
 
+// vue snackbar import
+import VueSnackbar from 'vue-snack'
+import 'vue-snack/dist/vue-snack.min.css'
+
 // bootstrap config
 Vue.use(BootstrapVue)
 
 // font awesome icons config
 Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+// vue snackbar config
+Vue.use(VueSnackbar)
 
 Vue.config.productionTip = false
 

@@ -6,15 +6,18 @@
     </div>
     <div class="form-group text-left">
       <label>Password:</label>
-      <input type="text" class="form-control" v-model="password">
+      <input type="password" class="form-control" v-model="password">
     </div>
     <div class="text-center">
-      <button class="btn btn-success">Log in</button>
+      <button class="btn btn-success"
+        @click="login">Log in</button>
     </div>
   </div>
 </template>
 
 <script>
+import HTTP from '@/http'
+
 export default {
   data () {
     return {
@@ -24,7 +27,13 @@ export default {
   },
   methods: {
     login () {
-      console.log('loginUser', this.email, this.password)
+      HTTP.login({ email: this.email, password: this.password })
+        .then((res) => {
+          this.$snack.success('You are logged in')
+        })
+        .catch(() => {
+          this.$snack.success('Login failed, try again!')
+        })
     }
   }
 }
