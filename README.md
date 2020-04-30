@@ -6,6 +6,12 @@ Very early stage project:
 
 ![Example](https://i.imgur.com/HSmJMaH.png)
 
+## Project links
+
+[Backend](https://github.com/RenatoBrittoAraujo/The-Tree-of-Knowledge-BACK) 
+
+[Task list - Trello](https://trello.com/b/vdMnXiOH/ttok) 
+
 ## Project setup
 ```
 npm install
