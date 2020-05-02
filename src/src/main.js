@@ -16,6 +16,9 @@ import FontAwesomeIcon from '@/libs/icons'
 import VueSnackbar from 'vue-snack'
 import 'vue-snack/dist/vue-snack.min.css'
 
+// vue cookies import
+import VueCookies from 'vue-cookies'
+
 // bootstrap config
 Vue.use(BootstrapVue)
 
@@ -24,6 +27,9 @@ Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 // vue snackbar config
 Vue.use(VueSnackbar)
+
+// vue cookies config
+Vue.use(VueCookies)
 
 Vue.config.productionTip = false
 

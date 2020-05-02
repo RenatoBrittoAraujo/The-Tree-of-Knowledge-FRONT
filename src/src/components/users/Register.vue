@@ -36,24 +36,24 @@ export default {
     return {
       username: '',
       email: '',
-      password: '',
-      password_confimation: ''
+      password: ''
     }
   },
   methods: {
-    register () {
+    async register () {
       const data = {
         username: this.username,
         password: this.password,
         email: this.email
       }
-      HTTP.register(data)
-        .then((res) => {
-          console.log('register suceed', res)
-        })
-        .catch((err) => {
-          console.log('register failed', err)
-        })
+      const registered =
+        await HTTP.register(data)
+      if (registered) {
+        this.$snack.success('You are registered')
+        this.$emit('popSidePage')
+      } else {
+        this.$snack.success('Something went wrong, try again!')
+      }
     }
   }
 }

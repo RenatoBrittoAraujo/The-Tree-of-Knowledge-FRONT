@@ -24,10 +24,12 @@
         <UserDigest v-else-if="topPage() == 'UserDigest'"
           v-on:sidePageChange="sidePageChange"
           v-on:popSidePage="popSidePage"/>
-        <AccountShow v-else-if="topPage() == 'AccountShow'" ref="accountshow"/>
+        <AccountShow v-else-if="topPage() == 'AccountShow'" ref="accountshow"
+          v-on:popSidePage="popSidePage"/>
         <Register v-else-if="topPage() == 'Register'"
           v-on:sidePageChange="sidePageChange"/>
-        <Login v-else-if="topPage() == 'Login'"/>
+        <Login v-else-if="topPage() == 'Login'"
+          v-on:popSidePage="popSidePage"/>
       </div>
     </div>
   </div>
@@ -44,6 +46,8 @@ import UserDigest from '@/components/users/UserDigest'
 import AccountShow from '@/components/users/AccountShow'
 import Register from '@/components/users/Register'
 import Login from '@/components/users/Login'
+
+import HTTP from '@/http'
 
 export default {
   components: {
@@ -104,6 +108,10 @@ export default {
     return {
       sideBarQueue: [{ page: 'HelpDigest' }]
     }
+  },
+  async mounted () {
+    console.log(await HTTP.testAcessToken())
+    console.log('is logged in?', await HTTP.isLoggedIn())
   }
 }
 </script>

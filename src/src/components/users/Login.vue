@@ -26,14 +26,15 @@ export default {
     }
   },
   methods: {
-    login () {
-      HTTP.login({ email: this.email, password: this.password })
-        .then((res) => {
-          this.$snack.success('You are logged in')
-        })
-        .catch(() => {
-          this.$snack.success('Login failed, try again!')
-        })
+    async login () {
+      const loggedIn =
+        await HTTP.login({ email: this.email, password: this.password })
+      if (loggedIn) {
+        this.$snack.success('You are logged in')
+        this.$emit('popSidePage')
+      } else {
+        this.$snack.success('Login failed, try again!')
+      }
     }
   }
 }

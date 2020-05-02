@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import HTTP from '@/http'
+
 export default {
   data () {
     return {
@@ -46,6 +48,10 @@ export default {
     },
     targetuserIsCurrentUser () {
       return this.username === 'cleber'
+    },
+    logout () {
+      HTTP.logout()
+      this.$emit('popSidePage')
     }
   }
 }
