@@ -26,7 +26,10 @@ export default {
   methods: {
     async testUser () {
       if (await HTTP.isLoggedIn()) {
-        this.authenticated = 'cleber'
+        this.authenticated = HTTP.getUser()
+        if (!this.authenticated || this.authenticated.length === 0) {
+          return
+        }
         this.$emit('popSidePage')
         this.$emit('sidePageChange',
           { page: 'AccountShow', username: this.authenticated })

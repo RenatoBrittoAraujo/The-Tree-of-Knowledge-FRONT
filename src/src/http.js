@@ -108,15 +108,13 @@ var editRef = async function () {
 
 }
 
-var getUsername = function () {
-  return new Promise((resolve, reject) => {
-    axios.get(ip + 'getusername/', header())
-      .then((res) => {
-        setData('username', res.data['username'])
-        resolve()
-      })
-      .catch((err) => reject(err))
-  })
+var getUsername = async function () {
+  return await axios.get(ip + 'getusername/', authHeader())
+    .then((res) => {
+      setData('username', res.data)
+      return true
+    })
+    .catch((err) => { return false})
 }
 
 var login = async function (data) {
@@ -125,21 +123,46 @@ var login = async function (data) {
         setData('access', res.data['access'])
         setData('refresh', res.data['refresh'])
         return await getUsername()
-          .then(() => { return true })
-          .catch((err) => { return false })
       })
       .catch((err) => { return false })
 }
 
 var register = async function (data) {
-  console.log(data)
   return await axios.post(ip + 'register/', data)
       .then(async (res) => {
-        console.log(res.data)
         setData('username', res.data['username'])
         return await login(data)
       })
-      .catch((err) => { console.log(err); return false })
+      .catch((err) => {
+        err = err.response.data
+        let ret =
+          err.username ? err['username'][0] : 
+          err.password ? err['password'][0] :
+          err['email'][0]
+        return ret
+      })
+}
+
+var getUser = function () {
+  return getData('username')
+}
+
+var queryUser = async function (username) {
+  return axios.get(ip + 'profile/' + username)
+    .then((res) => { return res.data })
+    .catch(() => { return false })
+}
+
+var editUser = async function (data) {
+  return await axios.put(ip + 'profileupdate/' + getData('username'), data, await header())
+    .then((res) => { return true })
+    .catch((err) => { return false })
+}
+
+var reportUser = async function (user) {
+  return await axios.get(ip + 'reportuser/' + user, await header())
+    .then((res) => { return true })
+    .catch((err) => { return false })
 }
 
 export default {
@@ -159,6 +182,10 @@ export default {
   register,
   logout,
   isLoggedIn,
+  getUser,
+  queryUser,
+  editUser,
+  reportUser,
 // Misc
   testAcessToken
 }

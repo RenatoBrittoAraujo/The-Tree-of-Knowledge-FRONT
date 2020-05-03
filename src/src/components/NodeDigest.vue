@@ -77,7 +77,7 @@
 <!-- PAGE CONTENT -->
     <h3 class="text-center mt-1">{{ title }}</h3>
     <h6 class="text-center">Author: <a href="#"
-      @click="$emit('sidePageChange', { page: 'UserDigest', username: author })">
+      @click="$emit('sidePageChange', { page: 'AccountShow', username: author })">
       {{ author }}</a></h6>
     <hr/>
     <p>{{ body }}</p>
@@ -177,7 +177,7 @@ export default {
       author: 'cleber',
       references: [
         { link: '/', title: 'Link', votes: 35, thumb: 0, author: 'cleber' },
-        { link: false, title: 'Book', votes: 7, thumb: 0, author: 'vitin' },
+        { link: false, title: 'Book', votes: 7, thumb: 0, author: 'natin' },
         { link: false, title: 'Scientific paper', votes: -13, thumb: 0, author: '69pedrao' }
       ],
       refForm: { title: 'adawaad', isLink: false, link: '' },

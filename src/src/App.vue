@@ -25,9 +25,11 @@
           v-on:sidePageChange="sidePageChange"
           v-on:popSidePage="popSidePage"/>
         <AccountShow v-else-if="topPage() == 'AccountShow'" ref="accountshow"
-          v-on:popSidePage="popSidePage"/>
-        <Register v-else-if="topPage() == 'Register'"
+          v-on:popSidePage="popSidePage"
           v-on:sidePageChange="sidePageChange"/>
+        <Register v-else-if="topPage() == 'Register'"
+          v-on:sidePageChange="sidePageChange"
+          v-on:popSidePage="popSidePage"/>
         <Login v-else-if="topPage() == 'Login'"
           v-on:popSidePage="popSidePage"/>
       </div>
@@ -77,7 +79,7 @@ export default {
       }
     },
     async popSidePage () {
-      await this.sideBarQueue.pop()
+      this.Gunselect()
     },
     topPage () {
       return this.sideBarQueue[this.sideBarQueue.length - 1].page
@@ -87,6 +89,9 @@ export default {
     },
     async Gunselect () {
       await this.sideBarQueue.pop()
+      if (this.topPage() === 'AccountShow') {
+        this.$refs.accountshow.setUser(this.getTopPage().username)
+      }
       if (this.topPage() !== 'NodeDigest') {
         this.$refs.graph.unselect()
       }
@@ -110,8 +115,12 @@ export default {
     }
   },
   async mounted () {
-    console.log(await HTTP.testAcessToken())
-    console.log('is logged in?', await HTTP.isLoggedIn())
+    const isLoggedIn = await HTTP.isLoggedIn()
+    if (isLoggedIn) {
+      console.log('Logged in as: ', HTTP.getUser())
+    } else {
+      console.log('Not logged in')
+    }
   }
 }
 </script>

@@ -27,14 +27,28 @@ export default {
   },
   methods: {
     async login () {
+      if (!this.validate()) {
+        return
+      }
       const loggedIn =
         await HTTP.login({ email: this.email, password: this.password })
       if (loggedIn) {
-        this.$snack.success('You are logged in')
+        this.$snack.success('You are logged in!')
         this.$emit('popSidePage')
       } else {
-        this.$snack.success('Login failed, try again!')
+        this.$snack.success('Email or password is wrong, try again')
       }
+    },
+    validate () {
+      if (!this.email || this.email.length === 0) {
+        this.$snack.success('Email must not be empty')
+        return false
+      }
+      if (!this.password || this.password.length < 8) {
+        this.$snack.success('Password must have 8 characters or more')
+        return false
+      }
+      return true
     }
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="text-center px-2">
-    <h3 class="mt-2">Welcome to The Tree of Knowledge</h3>
+    <h3 class="mt-3">Welcome to The Tree of Knowledge</h3>
     <hr/>
     <div class="text-left px-1">
       <p>Let me show you around!</p>
@@ -16,7 +16,7 @@
       <button class="w-100 btn btn-primary mb-2"
         @click="$emit('sidePageChange', { page: 'Register' })">Register</button>
       <p>Or log in:</p>
-      <button class="w-100 btn btn-primary"
+      <button class="w-100 btn btn-primary mb-5"
         @click="$emit('sidePageChange', { page: 'Login' })">Log in</button>
     </div>
   </div>
