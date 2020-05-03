@@ -6,6 +6,10 @@ Very early stage project:
 
 ![Example](https://i.imgur.com/HSmJMaH.png)
 
+v0.1 of the project:
+
+![v1.0](https://i.imgur.com/uMORwvC.png)
+
 ## Project links
 
 [Backend](https://github.com/RenatoBrittoAraujo/The-Tree-of-Knowledge-BACK) 
