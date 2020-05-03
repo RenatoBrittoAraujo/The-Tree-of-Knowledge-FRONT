@@ -8,7 +8,7 @@ Very early stage project (prototype, nothing functional):
 
 v0.1 of the project (everything functional but still not ready):
 
-![v1.0](https://i.imgur.com/uMORwvC.png)
+![v1.0](https://i.imgur.com/w4ivMCr.png)
 
 ## Project links
 
