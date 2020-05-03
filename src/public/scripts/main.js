@@ -26,6 +26,8 @@ export default function ($, canvasID, methods) {
 
     activeColor: "orange",
     inactiveColor: "#444444",
+    expandedColor: "#FF4500",
+    notexpandedColor: "#992300",
     textColor: "white"
   }
 
@@ -57,7 +59,7 @@ export default function ($, canvasID, methods) {
       }
       selected = newSelected
       selected.node.addData('selected', true)
-      methods.NDselect(selected.node.name)
+      methods.NDselect({ name: selected.node.name, id: selected.node.getData('id') })
     }
     
     /* Returned as rendering object */
@@ -119,7 +121,7 @@ export default function ($, canvasID, methods) {
         particleSystem.eachNode(function (node, pt) {
           if (!node.data.hidden) {
             // Node text
-            let text = node.name
+            let text = '   ' + node.name
             let textParams = Globals.textSize + "px " + Globals.textFont
             
             // Node rendering
@@ -131,16 +133,21 @@ export default function ($, canvasID, methods) {
               h: Globals.textSize + 2.0 * Globals.verticalPadding
             }
 
-            ctx.fillStyle = (node.getData('selected')) ? 
-              Globals.activeColor : Globals.inactiveColor
             let radius = Globals.verticalPadding + Globals.textSize / 2.0
             let cy = shape.y + Globals.verticalPadding + Globals.textSize / 2.0
             let firstCX = shape.x + radius
             let secondCX = shape.x + shape.w - radius
+
             ctx.beginPath()
+            ctx.fillStyle = (node.getData('expanded')) ?
+              Globals.expandedColor : Globals.notexpandedColor
             // Left circle
             ctx.arc(firstCX, cy, radius, 0, 2.0 * Math.PI);
             ctx.fill()
+            
+            ctx.beginPath()
+            ctx.fillStyle = (node.getData('selected')) ? 
+              Globals.activeColor : Globals.inactiveColor
             // Right circle
             ctx.arc(secondCX, cy, radius, 0, 2.0 * Math.PI);
             ctx.fill()
@@ -203,7 +210,7 @@ export default function ($, canvasID, methods) {
                 particleSystem.getNode(particle.node.name)
                   .addData('expanded', null)
               } else {
-                methods.queryNode(particle.node.name)
+                methods.queryNode(particle.node)
                 particleSystem.getNode(particle.node.name)
                   .addData('expanded', true)
               }
@@ -255,13 +262,18 @@ export default function ($, canvasID, methods) {
 
   var sys
 
-
-  var init = (name) => {
+  var init = (node) => {
+    if (sys) {
+      delete sys.renderer
+    }
     sys = arbor.ParticleSystem(1, 0, 0)
     sys.parameters({ gravity: true })
     sys.renderer = Renderer("#" + canvasID)
 
-    sys.addNode('a' || name)
+    // node.name = 'node name'
+    // node.id = 1
+    sys.addNode(node.name || 'emptyNode')
+    sys.getNode(node.name || 'emptyNode').addData('id', node.id)
     sys.addNode(hiddenNode, { hidden: true })
     /* WARNING: for some reason, arbor crashed when you try
        to add a new node later if in this init function you
@@ -273,10 +285,11 @@ export default function ($, canvasID, methods) {
        that ridiculous name, rendering is safe */
   }
 
-  var addNode = (from, name) => {
-    sys.addNode(name)
+  var addNode = (node, from) => {
+    sys.addNode(node.name)
+    sys.getNode(node.name).addData('id', node.id)
     if (from) {
-      sys.addEdge(from, name)
+      sys.addEdge(from, node.name)
     }
   }
 

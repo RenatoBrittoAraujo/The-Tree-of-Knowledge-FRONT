@@ -1,7 +1,8 @@
 <template>
   <div id="app" class="container-app">
-    <Header v-on:sidePageChange="sidePageChange"
-      class="row"/>
+    <Header class="row"
+      v-on:sidePageChange="sidePageChange"
+      v-on:randomNode="randomNode"/>
     <div class="row section">
       <Graph class="col-7 graph" id="graph" ref="graph"
         v-on:select="select"/>
@@ -49,8 +50,6 @@ import AccountShow from '@/components/users/AccountShow'
 import Register from '@/components/users/Register'
 import Login from '@/components/users/Login'
 
-import HTTP from '@/http'
-
 export default {
   components: {
     Header,
@@ -96,17 +95,20 @@ export default {
         this.$refs.graph.unselect()
       }
       if (this.topPage() === 'NodeDigest') {
-        const name = this.sideBarQueue[this.sideBarQueue.length - 1].name
-        this.$refs.nd.select(name)
-        this.$refs.graph.select(name)
+        const node = this.sideBarQueue[this.sideBarQueue.length - 1].obj
+        this.$refs.nd.select(node)
+        this.$refs.graph.select(node)
       }
     },
-    async select (name) {
-      await this.sideBarQueue.push({ page: 'NodeDigest', name: name })
-      this.$refs.nd.select(name)
+    async select (obj) {
+      await this.sideBarQueue.push({ page: 'NodeDigest', obj: obj })
+      this.$refs.nd.select(obj)
     },
     newNode (obj) {
       this.$refs.graph.newNode(obj)
+    },
+    randomNode () {
+      this.$refs.graph.resetGraph()
     }
   },
   data () {
@@ -115,12 +117,6 @@ export default {
     }
   },
   async mounted () {
-    const isLoggedIn = await HTTP.isLoggedIn()
-    if (isLoggedIn) {
-      console.log('Logged in as: ', HTTP.getUser())
-    } else {
-      console.log('Not logged in')
-    }
   }
 }
 </script>

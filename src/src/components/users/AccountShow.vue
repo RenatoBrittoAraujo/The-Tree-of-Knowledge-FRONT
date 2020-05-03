@@ -95,7 +95,6 @@ export default {
       const data = {
         bio: this.editForm.bio
       }
-      console.log('editUser')
       const edited = await HTTP.editUser(data)
       if (edited) {
         this.$snack.success('Profile updated!')
@@ -107,6 +106,7 @@ export default {
     async report () {
       if (!(await HTTP.isLoggedIn())) {
         this.$snack.success('You must be logged in to report someone')
+        return
       }
       const reported = await HTTP.reportUser(this.username)
       if (reported) {

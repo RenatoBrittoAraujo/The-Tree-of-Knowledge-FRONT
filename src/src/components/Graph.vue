@@ -5,11 +5,10 @@
 </template>
 
 <script>
+import HTTP from '@/http'
 import main from '../../public/scripts/main'
 import JQuery from 'jquery'
 window.$ = JQuery
-
-let natincounter = 1
 
 export default {
   data () {
@@ -22,28 +21,23 @@ export default {
     this.runGraph()
   },
   methods: {
-    runGraph () {
+    async runGraph () {
       this.canvas = main(window.$, this.canvasID, this)
-      this.canvas.init()
-    },
-    // Calls into canvas
-    selectRandomNode () {
-      this.canvas.addNode('a', 'natin ' + natincounter)
-      natincounter++
+      const randomNode = await HTTP.getRandomNode()
+      this.canvas.init(randomNode)
     },
     // Calls from canvas
-    queryNode (name) {
-      console.log('queryNode', name)
-      this.canvas.addNode(name, 'natin ' + natincounter)
-      natincounter++
-      this.canvas.addNode(name, 'natin ' + natincounter)
-      natincounter++
+    async queryNode (qnode) {
+      const query = await HTTP.queryNode(qnode.getData('id'))
+      for (const node of query) {
+        this.canvas.addNode(node, qnode.name)
+      }
     },
     NDunselect () {
       // this.$emit('unselect', name)
     },
-    NDselect (name) {
-      this.$emit('select', name)
+    NDselect (obj) {
+      this.$emit('select', obj)
     },
     unselect () {
       this.canvas.unselect()
@@ -52,7 +46,11 @@ export default {
       this.canvas.select(name)
     },
     newNode (obj) {
-      this.canvas.addNode(obj.from, obj.name)
+      this.canvas.addNode(obj.node, obj.from)
+    },
+    async resetGraph () {
+      const randomNode = await HTTP.getRandomNode()
+      this.canvas.init(randomNode)
     }
   }
 }

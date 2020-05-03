@@ -12,15 +12,50 @@
       <p>This is a democratic process, where people vote and a consus in achieved on the connections and contents of nodes, that way, nobody is the owner of truth.</p>
       <p>Read the <a href="#about" @click="$emit('sidePageChange', { page: 'About' })">about</a> of you want to know more.</p>
       <p>Make sure to read the <a href="#rules" @click="$emit('sidePageChange', { page: 'Rules' })">rules</a> if you want to contribute.</p>
-      <p>Create your account:</p>
-      <button class="w-100 btn btn-primary mb-2"
-        @click="$emit('sidePageChange', { page: 'Register' })">Register</button>
-      <p>Or log in:</p>
-      <button class="w-100 btn btn-primary mb-5"
-        @click="$emit('sidePageChange', { page: 'Login' })">Log in</button>
+      <div v-if="!loggedIn">
+        <p>You are not logged in</p>
+        <button class="w-100 btn btn-primary mb-2"
+          @click="$emit('sidePageChange', { page: 'Register' })">Register</button>
+        <button class="w-100 btn btn-primary mb-5"
+          @click="$emit('sidePageChange', { page: 'Login' })">Log in</button>
+      </div>
+      <div v-else>
+        <p>You are logged in as <a class="text-dark font-weight-bold">{{ getUser() }}</a></p>
+        <button class="w-100 btn btn-primary mb-2"
+          @click="logout">Logout</button>
+        <button class="w-100 btn btn-primary mb-5"
+          @click="$emit('sidePageChange', { page: 'AccountShow', username: getUser() })">Go to profile</button>
+      </div>
     </div>
   </div>
 </template>
+
+<script>
+import HTTP from '@/http'
+
+export default {
+  data () {
+    return {
+      loggedIn: false
+    }
+  },
+  mounted () {
+    this.isLoggedIn()
+  },
+  methods: {
+    async isLoggedIn () {
+      this.loggedIn = await HTTP.isLoggedIn()
+    },
+    logout () {
+      HTTP.logout()
+      this.isLoggedIn()
+    },
+    getUser () {
+      return HTTP.getUser()
+    }
+  }
+}
+</script>
 
 <style>
 </style>
