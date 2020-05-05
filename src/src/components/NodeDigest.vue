@@ -207,7 +207,7 @@
     <hr>
     <div class="row px-3 mt-1 mb-3">
       <button class="col btn btn-danger"
-        @click="reportNode">Report</button>
+        @click="report">Report</button>
     </div>
   </div>
 </template>
@@ -237,27 +237,51 @@ export default {
     select (node) {
       this.title = node.name
       this.id = node.id
-      this.parent = node.parent
+      this.parent = node.parent === undefined ? null : node.parent
       this.queryNode()
     },
     async queryNode () {
-      const node = await HTTP.getNode(this.id)
+      const node = await HTTP.getNode(this.id, this.parent ? this.parent.data.id : null)
       if (node) {
         this.body = this.nodeEditForm.body = node.body
         this.votes = node.votes
         this.references = node.refs
         this.author = node.author
+        this.thumb = node.thumb
+        this.votes -= node.thumb
+        for (const ref of this.references) {
+          ref.votes -= ref.thumb
+        }
       } else {
         this.$snack.success('Node does not exist')
       }
     },
-    report () {},
-    voteNode (voteparam) {
+    async report () {
+      if (!(await HTTP.isLoggedIn())) {
+        this.$snack.success('You must be logged in to report')
+        return
+      }
+      const reported = await HTTP.reportNode(this.id)
+      if (reported) {
+        this.$snack.success('Node reported')
+      } else {
+        this.$snack.success('You have already reported this node')
+      }
+    },
+    async voteNode (voteparam) {
+      if (!(await HTTP.isLoggedIn())) {
+        this.$snack.success('You must be logged in to vote')
+        return
+      }
       if (voteparam === this.thumb) {
         voteparam = 0
       }
-      console.log('Voting on node', this.title, 'old vote:', this.thumb, 'new vote:', voteparam)
-      this.thumb = voteparam
+      const voted = await HTTP.voteNode(this.id, this.parent.data.id, voteparam)
+      if (voted) {
+        this.thumb = voteparam
+      } else {
+        this.$snack.success('Something went wrong, try again')
+      }
     },
     getNodeVotes () {
       return this.thumb + this.votes
@@ -266,12 +290,20 @@ export default {
       return this.references[index].thumb +
              this.references[index].votes
     },
-    voteRef (index, voteparam) {
+    async voteRef (index, voteparam) {
+      if (!(await HTTP.isLoggedIn())) {
+        this.$snack.success('You must be logged in to vote')
+        return
+      }
       if (voteparam === this.references[index].thumb) {
         voteparam = 0
       }
-      console.log('Voting on ref', this.references[index].title, 'old vote:', this.references[index].thumb, 'new vote:', voteparam)
-      this.references[index].thumb = voteparam
+      const voted = await HTTP.voteRef(this.references[index].id, voteparam)
+      if (voted) {
+        this.references[index].thumb = voteparam
+      } else {
+        this.$snack.success('Something went wrong, try again')
+      }
     },
     async addRef () {
       if (!(await HTTP.isLoggedIn())) {
@@ -340,8 +372,6 @@ export default {
       } else {
         this.$snack.success('Something went wrong, try again')
       }
-    },
-    async reportNode () {
     }
   }
 }

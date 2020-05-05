@@ -55,8 +55,8 @@ import HTTP from '@/http'
 export default {
   data () {
     return {
-      username: '',
-      bio: '',
+      username: 'EMPTY USER',
+      bio: 'Something very wrong happend, we are sorry',
       points: 0,
       contributions: [],
       editForm: {

@@ -132,20 +132,34 @@ var queryNode = async function (nodeID) {
     .catch(() => false)
 }
 
-var getNode = async function (nodeID) {
-  return axios.get(ip + 'getnode/' + nodeID)
+var getNode = async function (nodeID, parent=null) {
+  const parentReq = parent != undefined && parent != null ?
+    '?parent=' + parent : ''
+  if (isLoggedIn())
+    return axios.get(ip + 'getnode/' + nodeID + parentReq, await header())
+      .then(res => res.data)
+      .catch(() => false)
+  else return axios.get(ip + 'getnode/' + nodeID + parentReq)
     .then(res => res.data)
     .catch(() => false)
 }
 
-var voteNode = async function (nodeID, voteparam, parent) {
-  const header = await header()
-  if (!header) return false
-  return axios.post('votenode/' + nodeID, 
-    { voteparam: voteparam, parent: parent },
-    header)
+var voteNode = async function (nodeID, parent, voteparam) {
+  return axios.post(ip + 'votenode/' + nodeID, 
+      { voteparam: '' + voteparam, parent: parent },
+      await header()
+    )
     .then(res => res.data)
-    .catch(() => false)
+    .catch((err) => false )
+}
+
+var voteRef = async function (refID, voteparam) {
+  return axios.post(ip + 'voteref/' + refID,
+    { voteparam: '' + voteparam },
+    await header()
+  )
+    .then(res => res.data)
+    .catch((err) => false)
 }
 
 var getRandomNode = async function () {
@@ -154,8 +168,10 @@ var getRandomNode = async function () {
     .catch(() => false)
 }
 
-var reportNode = async function () {
-
+var reportNode = async function (id) {
+  return axios.get(ip + 'report/' + id, await header())
+    .then(res => res.data)
+    .catch(() => false)
 }
 
 var addNode = async function (data) {
@@ -203,7 +219,8 @@ export default {
 /* Nodes API */
   queryNode,      // input: node id                          output: list of child node ids
   getNode,        // input: node id                          output: node info
-  voteNode,       // input: {node id, parent, voteparam}     output: true/false voted successfully
+  voteNode,       // input: node id, parent, voteparam       output: true/false voted successfully
+  voteRef,        // input: ref id, voteparam                output: true/false voted successfully  
   getRandomNode,  // input: none                             output: random node info
   reportNode,     // NOT IMPLEMENTED
   addNode,        // input: node id                          output: list of child node ids
