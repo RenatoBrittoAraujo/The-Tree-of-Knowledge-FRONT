@@ -111,22 +111,30 @@
       @click="$emit('sidePageChange', { page: 'AccountShow', username: author })">
       {{ author }}</a></h6>
     <hr/>
-    <p>{{ body }}</p>
-    <hr/>
-    <div class="row pl-3 pr-3 text-secondary">
+    <p v-if="body.length">
+      {{ body }}
+    </p>
+    <p class="text-muted text-center" v-else>
+      No body text
+    </p>
+    <hr v-if="parent"/>
+    <div class="row pl-3 pr-3 text-secondary" v-if="parent">
+      <a class="col-12 text-center">
+        Votes on edge <i> {{ parent.name }} </i> -> <i> {{ title }}</i>
+      </a>
       <font-awesome-icon
         :class="'col-4 mt-2 text-' + (thumb === 1 ? 'success' : 'secondary')"
         size="1x"
         icon="thumbs-up"
-        @click="thumbsUp"/>
+        @click="voteNode(1)"/>
       <div class="col-4 text-center mt-1 unselectable">
-        {{ votes >= 0 ? '+' + votes : votes }}
+        {{ getNodeVotes() >= 0 ? '+' + getNodeVotes() : getNodeVotes() }}
       </div>
       <font-awesome-icon
         :class="'col-4 mt-2 text-' + (thumb === -1 ? 'danger' : 'secondary')"
         size="1x"
         icon="thumbs-down"
-        @click="thumbsDown"/>
+        @click="voteNode(-1)"/>
     </div>
     <hr/>
     <div class="text-center mt-1">
@@ -141,6 +149,9 @@
         </div>
       </div>
       <ul class="text-left list-group">
+        <li v-if="references.length === 0" class="list-group-item text-muted text-center">
+            No references found
+        </li>
         <li v-for="(reference, index) in references" :key="index" class="list-group-item">
           <a v-if="reference.link" :href="reference.link" target="_blank">
             {{ reference.title }}
@@ -151,15 +162,16 @@
               :class="'mt-1 text-' + (reference.thumb === 1 ? 'success' : 'secondary')"
               size="sm"
               icon="thumbs-up"
-              @click="refThumbsUp(index)"/>
+              @click="voteRef(index, 1)"/>
             <p class="unselectable text-muted mx-2" style="display: inline">
-              {{ reference.votes >= 0 ? '+' + reference.votes : reference.votes }}
+              {{ getRefVotes(index) >= 0 ?
+                '+' + getRefVotes(index) : getRefVotes(index) }}
             </p>
             <font-awesome-icon
               :class="'mt-1 text-' + (reference.thumb === -1 ? 'danger' : 'secondary')"
               size="sm"
               icon="thumbs-down"
-              @click="refThumbsDown(index)"/>
+              @click="voteRef(index, -1)"/>
             · by <a :href="'#'+reference.author"
              @click="$emit('sidePageChange', { page: 'AccountShow', username: reference.author })">
              {{ reference.author }} </a>
@@ -193,8 +205,9 @@
       </div>
     </div>
     <hr>
-    <div class="row px-5 mt-1 mb-3">
-      <button class="col btn btn-danger">Report</button>
+    <div class="row px-3 mt-1 mb-3">
+      <button class="col btn btn-danger"
+        @click="reportNode">Report</button>
     </div>
   </div>
 </template>
@@ -209,6 +222,7 @@ export default {
       thumb: 0,
       votes: 69420,
       title: 'EMPTY NODE',
+      parent: null,
       body: 'THIS NODE SHOULD NOT EXIST!',
       author: 'cleber',
       references: [
@@ -223,6 +237,7 @@ export default {
     select (node) {
       this.title = node.name
       this.id = node.id
+      this.parent = node.parent
       this.queryNode()
     },
     async queryNode () {
@@ -231,46 +246,32 @@ export default {
         this.body = this.nodeEditForm.body = node.body
         this.votes = node.votes
         this.references = node.refs
+        this.author = node.author
       } else {
         this.$snack.success('Node does not exist')
       }
     },
     report () {},
-    thumbsUp () {
-      if (this.thumb === 1) {
-        this.votes--
-        this.thumb = 0
-      } else {
-        this.votes += 1 - this.thumb
-        this.thumb = 1
+    voteNode (voteparam) {
+      if (voteparam === this.thumb) {
+        voteparam = 0
       }
+      console.log('Voting on node', this.title, 'old vote:', this.thumb, 'new vote:', voteparam)
+      this.thumb = voteparam
     },
-    thumbsDown () {
-      if (this.thumb === -1) {
-        this.thumb = 0
-        this.votes++
-      } else {
-        this.votes -= 1 + this.thumb
-        this.thumb = -1
-      }
+    getNodeVotes () {
+      return this.thumb + this.votes
     },
-    refThumbsUp (index) {
-      if (this.references[index].thumb === 1) {
-        this.references[index].votes--
-        this.references[index].thumb = 0
-      } else {
-        this.references[index].votes += 1 - this.references[index].thumb
-        this.references[index].thumb = 1
-      }
+    getRefVotes (index) {
+      return this.references[index].thumb +
+             this.references[index].votes
     },
-    refThumbsDown (index) {
-      if (this.references[index].thumb === -1) {
-        this.references[index].thumb = 0
-        this.references[index].votes++
-      } else {
-        this.references[index].votes -= 1 + this.references[index].thumb
-        this.references[index].thumb = -1
+    voteRef (index, voteparam) {
+      if (voteparam === this.references[index].thumb) {
+        voteparam = 0
       }
+      console.log('Voting on ref', this.references[index].title, 'old vote:', this.references[index].thumb, 'new vote:', voteparam)
+      this.references[index].thumb = voteparam
     },
     async addRef () {
       if (!(await HTTP.isLoggedIn())) {
@@ -290,7 +291,8 @@ export default {
           title: this.refForm.title,
           votes: 0,
           thumb: 0,
-          id: added.id
+          id: added.id,
+          author: HTTP.getUser()
         })
         this.refForm.title = ''
         this.refForm.isLink = false
@@ -338,6 +340,8 @@ export default {
       } else {
         this.$snack.success('Something went wrong, try again')
       }
+    },
+    async reportNode () {
     }
   }
 }

@@ -59,12 +59,26 @@ export default function ($, canvasID, methods) {
       }
       selected = newSelected
       selected.node.addData('selected', true)
-      methods.NDselect({ name: selected.node.name, id: selected.node.getData('id') })
+      let nodeData = { 
+        name: selected.node.name, 
+        id: selected.node.getData('id') 
+      }
+      if (selected.node.getData('parent')) {
+        nodeData.parent = selected.node.getData('parent')
+      }
+      methods.NDselect(nodeData)
     }
     
     /* Returned as rendering object */
-    
     var that = {
+      deleteAll: function () {
+        particleSystem.eachNode(function (node, pt) {
+          particleSystem.pruneNode(node)
+        })
+        particleSystem.eachEdge(function (edge, pt1, pt2) {
+          particleSystem.pruneEdge(edge)
+        })
+      },
       select: function (newSelected) {
         that.unselect()
         if (particleSystem.getNode(newSelected)) {
@@ -97,10 +111,6 @@ export default function ($, canvasID, methods) {
       redraw: function () {
         ctx.fillStyle = Globals.backgroundColor
         ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-        let dist = (p1, p2) => {
-          return Math.hypot(p1.x - p2.x, p1.y - p2.y)
-        }
 
         particleSystem.eachEdge(function (edge, pt1, pt2) {
           if (edge.source.name != hiddenNode || edge.target.name != hiddenNode) {
@@ -264,17 +274,16 @@ export default function ($, canvasID, methods) {
 
   var init = (node) => {
     if (sys) {
+      sys.renderer.deleteAll()
       delete sys.renderer
     }
     sys = arbor.ParticleSystem(1, 0, 0)
     sys.parameters({ gravity: true })
     sys.renderer = Renderer("#" + canvasID)
 
-    // node.name = 'node name'
-    // node.id = 1
-    sys.addNode(node.name || 'emptyNode')
+    sys.addNode(node.name || 'emptyNode', { x: 0, y: 0 } )
     sys.getNode(node.name || 'emptyNode').addData('id', node.id)
-    sys.addNode(hiddenNode, { hidden: true })
+    sys.addNode(hiddenNode, { hidden: true, x: 0, y: 0 })
     /* WARNING: for some reason, arbor crashed when you try
        to add a new node later if in this init function you
        only declare one single node. I have no ideia why,
@@ -290,6 +299,7 @@ export default function ($, canvasID, methods) {
     sys.getNode(node.name).addData('id', node.id)
     if (from) {
       sys.addEdge(from, node.name)
+      sys.getNode(node.name).addData('parent', sys.getNode(from))
     }
   }
 

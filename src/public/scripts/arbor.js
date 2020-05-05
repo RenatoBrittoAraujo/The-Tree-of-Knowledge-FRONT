@@ -633,7 +633,7 @@
             topleft = new Point(node._p)
             return
           }
-        
+          
           var point = node._p
           if (point.x===null || point.y===null) return
           if (point.x > bottomright.x) bottomright.x = point.x;
@@ -661,12 +661,14 @@
         var t = that;
         
         $.each(state.nodes, function(id, node){
-          var pt = node._p
-          if (pt.x===null || pt.y===null) return
-          var distance = pt.subtract(pos).magnitude();
-          if (min.distance === null || distance < min.distance){
-            min = {node: node, point: pt, distance: distance};
-            if (_screenSize!==null) min.screenPoint = that.toScreen(pt)
+          if (!node.data.hidden) {
+            var pt = node._p
+            if (pt.x===null || pt.y===null) return
+            var distance = pt.subtract(pos).magnitude();
+            if ((min.distance === null || distance < min.distance)){
+              min = {node: node, point: pt, distance: distance};
+              if (_screenSize!==null) min.screenPoint = that.toScreen(pt)
+            }
           }
         })
         
@@ -675,7 +677,7 @@
            return min
         }else{
            return null
-        }
+          }
       },
 
       _notify:function() {
