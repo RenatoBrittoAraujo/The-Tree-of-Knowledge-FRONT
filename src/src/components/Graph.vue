@@ -33,6 +33,9 @@ export default {
         this.canvas.addNode(node, qnode.name)
       }
     },
+    deleteNode (node) {
+      this.canvas.deleteNode(node)
+    },
     NDunselect () {
       // this.$emit('unselect', name)
     },
@@ -48,9 +51,11 @@ export default {
     newNode (obj) {
       this.canvas.addNode(obj.node, obj.from)
     },
-    async resetGraph () {
-      const randomNode = await HTTP.getRandomNode()
-      this.canvas.init(randomNode)
+    async resetGraph (node = null) {
+      if (!node) {
+        node = await HTTP.getRandomNode()
+      }
+      this.canvas.init(node)
     }
   }
 }

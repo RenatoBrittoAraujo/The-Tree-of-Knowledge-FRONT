@@ -42,7 +42,7 @@
       <p>Contributions:</p>
       <ul class="text-left list-group">
         <li v-for="contribution in contributions" :key="contribution" class="list-group-item">
-          {{ contribution }}
+          {{ contribution.text }}
         </li>
       </ul>
     </div>

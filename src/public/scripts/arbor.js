@@ -628,22 +628,23 @@
 
         // find the true x/y range of the nodes
         $.each(state.nodes, function(id, node){
-          if (!bottomright){
-            bottomright = new Point(node._p)
-            topleft = new Point(node._p)
-            return
+          if (!node.data.hidden) {
+            if (!bottomright){
+              bottomright = new Point(node._p)
+              topleft = new Point(node._p)
+              return
+            }
+            
+            var point = node._p
+            if (point.x===null || point.y===null) return
+            if (point.x > bottomright.x) bottomright.x = point.x;
+            if (point.y > bottomright.y) bottomright.y = point.y;          
+            if   (point.x < topleft.x)   topleft.x = point.x;
+            if   (point.y < topleft.y)   topleft.y = point.y;
           }
-          
-          var point = node._p
-          if (point.x===null || point.y===null) return
-          if (point.x > bottomright.x) bottomright.x = point.x;
-          if (point.y > bottomright.y) bottomright.y = point.y;          
-          if   (point.x < topleft.x)   topleft.x = point.x;
-          if   (point.y < topleft.y)   topleft.y = point.y;
-        })
+          })
 
-
-        // return the true range then let to/fromScreen handle the padding
+          // return the true range then let to/fromScreen handle the padding
         if (bottomright && topleft){
           return {bottomright: bottomright, topleft: topleft}
         }else{

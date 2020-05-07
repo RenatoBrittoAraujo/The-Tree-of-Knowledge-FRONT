@@ -33,7 +33,7 @@ export default {
       const loggedIn =
         await HTTP.login({ email: this.email, password: this.password })
       if (loggedIn) {
-        this.$snack.success('You are logged in!')
+        this.$snack.success('Logged in')
         this.$emit('popSidePage')
       } else {
         this.$snack.success('Email or password is wrong, try again')

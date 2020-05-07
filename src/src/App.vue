@@ -17,7 +17,9 @@
           ref="nd"
           v-on:createNewNode="createNewNode"
           v-on:sidePageChange="sidePageChange"
-          v-on:newNode="newNode"/>
+          v-on:newNode="newNode"
+          v-on:popSidePage="popSidePage"
+          v-on:deleteNode="deleteNode"/>
         <About v-else-if="topPage() == 'About'"/>
         <Rules v-else-if="topPage() == 'Rules'"/>
         <HelpDigest v-else-if="topPage() == 'HelpDigest'"
@@ -32,6 +34,9 @@
           v-on:sidePageChange="sidePageChange"
           v-on:popSidePage="popSidePage"/>
         <Login v-else-if="topPage() == 'Login'"
+          v-on:popSidePage="popSidePage"/>
+        <SearchList v-else-if="topPage() == 'SearchList'" ref="searchList"
+          v-on:sidePageChange="sidePageChange"
           v-on:popSidePage="popSidePage"/>
       </div>
     </div>
@@ -49,6 +54,7 @@ import UserDigest from '@/components/users/UserDigest'
 import AccountShow from '@/components/users/AccountShow'
 import Register from '@/components/users/Register'
 import Login from '@/components/users/Login'
+import SearchList from '@/components/SearchList'
 
 export default {
   components: {
@@ -61,7 +67,15 @@ export default {
     UserDigest,
     AccountShow,
     Login,
-    Register
+    Register,
+    SearchList
+  },
+  data () {
+    return {
+      sideBarQueue: [{ page: 'HelpDigest' }]
+    }
+  },
+  mounted () {
   },
   methods: {
     createNewNode () {
@@ -75,6 +89,9 @@ export default {
       await this.sideBarQueue.push(pageObj)
       if (this.topPage() === 'AccountShow') {
         this.$refs.accountshow.setUser(this.getTopPage().username)
+      }
+      if (this.topPage() === 'SearchList') {
+        this.$refs.searchList.setGraph(this.$refs.graph)
       }
     },
     async popSidePage () {
@@ -109,14 +126,10 @@ export default {
     },
     randomNode () {
       this.$refs.graph.resetGraph()
+    },
+    deleteNode (node) {
+      this.$refs.graph.deleteNode(node)
     }
-  },
-  data () {
-    return {
-      sideBarQueue: [{ page: 'HelpDigest' }]
-    }
-  },
-  async mounted () {
   }
 }
 </script>

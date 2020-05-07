@@ -1,8 +1,8 @@
 <template>
   <div class="p-2">
 <!-- FORMS -->
-    <div>
 <!-- FORM FOR REFERENCE -->
+    <div>
       <div class="modal fade" id="referenceForm" tabindex="-1" role="dialog" aria-labelledby="referenceFormLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -74,6 +74,44 @@
       </div>
     </div>
   </div>
+<!-- FORM FOR REFERENCE EDIT -->
+    <div>
+      <div class="modal fade" id="refEditForm" tabindex="-1" role="dialog" aria-labelledby="refEditFormLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="refEditFormLabel">Edit reference</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="text-center text-muted bg-light p-1">
+                Make sure to read the
+                <a href="#rules" data-dismiss="modal"
+                  @click="$emit('sidePageChange', { page: 'Rules' } )">rules</a>
+                before
+              </div>
+              <div class="form-group">
+                <label>Reference title</label>
+                <input type="text" class="form-control" v-model="refEditForm.title">
+              </div>
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" v-model="refEditForm.isLink">
+                <label class="form-check-label unselectable">Can you provide a link for it?</label>
+              </div>
+              <div class="form-group mt-1" v-if="refEditForm.isLink">
+                <input type="text" class="form-control" placeholder="https://www.reference.com" v-model="refEditForm.link">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary"
+                @click="refEdit" data-dismiss="modal">Edit Reference</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 <!-- FORM FOR NODE EDIT -->
   <div class="modal fade" id="nodeEditForm" tabindex="-1" role="dialog"
     aria-labelledby="nodeEditFormLabel" aria-hidden="true">
@@ -99,8 +137,28 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-success"
+          <button type="button" class="btn btn-primary"
             @click="editNode" data-dismiss="modal">Edit Node</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- DELETE CONFIMATION MODAL -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
+    aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Are you sure you want to delete?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger"
+            @click="deleteObj" data-dismiss="modal">Delete</button>
+          <button type="button" class="btn btn-primary"
+            data-dismiss="modal">Cancel</button>
         </div>
       </div>
     </div>
@@ -175,12 +233,18 @@
             · by <a :href="'#'+reference.author"
              @click="$emit('sidePageChange', { page: 'AccountShow', username: reference.author })">
              {{ reference.author }} </a>
+            <a v-if="reference.author == getUser()" class="text-muted">
+              · <a @click="fillRefEdit(index)"
+                data-toggle="modal" data-target="#refEditForm">Edit</a>
+              · <a @click="toDelete = { ref: true, id: reference.id }"
+                data-toggle="modal" data-target="#deleteModal">Delete</a>
+            </a>
           </div>
         </li>
       </ul>
     </div>
     <hr/>
-    <div class="col">
+    <div class="col p-0">
       <div class="row mt-1">
         <div class="col-3">
           <button class="col btn btn-primary"
@@ -203,6 +267,18 @@
           Add a child node to this node
         </div>
       </div>
+      <div class="row mt-1" v-if="getUser() == author">
+        <div class="col-3">
+          <button class="col btn mr-1 btn-danger"
+            data-toggle="modal"
+            data-target="#deleteModal"
+            @click="toDelete = { node: true, id: id }">
+              Delete</button>
+        </div>
+        <div class="col-9 mt-2">
+          Deletes this node
+        </div>
+      </div>
     </div>
     <hr>
     <div class="row px-3 mt-1 mb-3">
@@ -220,25 +296,77 @@ export default {
     return {
       id: -1,
       thumb: 0,
-      votes: 69420,
+      votes: 0,
       title: 'EMPTY NODE',
       parent: null,
-      body: 'THIS NODE SHOULD NOT EXIST!',
-      author: 'cleber',
-      references: [
-        { link: '', title: 'TAKE CARE OF THIS!', votes: 35, thumb: 0, author: 'satan' }
-      ],
-      refForm: { title: 'adawaad', isLink: false, link: '' },
+      body: '',
+      author: '',
+      references: [],
+      refForm: { title: '', isLink: false, link: '' },
       nodeForm: { title: '', body: '' },
-      nodeEditForm: { body: '' }
+      nodeEditForm: { body: '' },
+      toDelete: null,
+      refEditForm: { id: '', title: '', isLink: false, link: '', index: 0 }
     }
   },
   methods: {
+    fillRefEdit (index) {
+      this.refEditForm = this.references[index]
+      this.refEditForm.index = index
+    },
+    async refEdit () {
+      const data = {
+        title: this.refEditForm.title,
+        link: this.refEditForm.link
+      }
+      const edited = await HTTP.editRef(this.refEditForm.id, data)
+      if (edited) {
+        const ref = this.references[this.refEditForm.index]
+        ref.title = this.refEditForm.title
+        ref.link = this.refEditForm.link
+        ref.isLink = this.refEditForm.isLink
+        this.$snack.success('Reference edited')
+      } else {
+        this.$snack.success('Something went wrong, try again')
+      }
+    },
+    async deleteObj () {
+      if (this.toDelete == null) {
+        return
+      }
+      if (this.toDelete.ref) {
+        const deleted = await HTTP.deleteRef(this.toDelete.id)
+        if (deleted) {
+          const newRefs = []
+          for (const ref in this.references) {
+            if (this.references[ref].id !== this.toDelete.id) {
+              newRefs.push(this.references[ref])
+            }
+          }
+          this.references = newRefs
+          this.$snack.success('Reference deleted')
+        } else {
+          this.$snack.success('Something went wrong, try again')
+        }
+      } else if (this.toDelete.node) {
+        const deleted = await HTTP.deleteNode(this.toDelete.id)
+        if (deleted) {
+          this.$emit('deleteNode', { name: this.title, id: this.id })
+          this.$emit('popSidePage')
+          this.$snack.success('Node deleted')
+        } else {
+          this.$snack.success('Something went wrong, try again')
+        }
+      }
+    },
     select (node) {
       this.title = node.name
       this.id = node.id
       this.parent = node.parent === undefined ? null : node.parent
       this.queryNode()
+    },
+    getUser () {
+      return HTTP.getUser()
     },
     async queryNode () {
       const node = await HTTP.getNode(this.id, this.parent ? this.parent.data.id : null)
@@ -367,7 +495,7 @@ export default {
       }
       const edited = await HTTP.editNode(this.id, data)
       if (edited) {
-        this.$snack.success('Node edited!')
+        this.$snack.success('Node edited')
         this.body = this.nodeEditForm.body
       } else {
         this.$snack.success('Something went wrong, try again')

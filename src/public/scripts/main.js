@@ -277,25 +277,25 @@ export default function ($, canvasID, methods) {
       sys.renderer.deleteAll()
       delete sys.renderer
     }
-    sys = arbor.ParticleSystem(1, 0, 0)
+    sys = arbor.ParticleSystem(1, 100, 300)
     sys.parameters({ gravity: true })
     sys.renderer = Renderer("#" + canvasID)
 
-    sys.addNode(node.name || 'emptyNode', { x: 0, y: 0 } )
+    sys.addNode(node.name || 'emptyNode', { x: 0, y: 0, mass: 1 } )
     sys.getNode(node.name || 'emptyNode').addData('id', node.id)
-    sys.addNode(hiddenNode, { hidden: true, x: 0, y: 0 })
+    sys.addNode(hiddenNode, { hidden: true, x: 0, y: 0, mass: 1})
     /* WARNING: for some reason, arbor crashed when you try
        to add a new node later if in this init function you
        only declare one single node. I have no ideia why,
        I tried fixing this and gave up after 2 whole days
        on this issue. The best solution is to just create 
-       a hidden node and set the renderer to node even
+       a hidden node and set the renderer to not even
        consider it when redering. As long as nobody uses
        that ridiculous name, rendering is safe */
   }
 
   var addNode = (node, from) => {
-    sys.addNode(node.name)
+    sys.addNode(node.name, { mass: 1 })
     sys.getNode(node.name).addData('id', node.id)
     if (from) {
       sys.addEdge(from, node.name)
@@ -311,12 +311,27 @@ export default function ($, canvasID, methods) {
     sys.renderer.select(name)
   }
 
+  var deleteNodeRecursion = (node) => {
+    let edges = sys.getEdgesFrom(node)
+    for (let edge of edges) {
+      let targetNode = edge.target
+      deleteNodeRecursion(targetNode)
+    }
+    sys.pruneNode(node)
+  }
+  
+  var deleteNode = function (node) {
+    const name = node.name
+    deleteNodeRecursion(name)
+  }
+
   /* These are functions accessible from the vue component Graph,
      they are used to communicate with the canvas */
   return {
     init,
     addNode,
     unselect,
-    select
+    select,
+    deleteNode
   }
 }
