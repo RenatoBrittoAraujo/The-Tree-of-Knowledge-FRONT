@@ -5,7 +5,8 @@
       v-on:randomNode="randomNode"/>
     <div class="row section">
       <Graph class="col-7 graph" id="graph" ref="graph"
-        v-on:select="select"/>
+        v-on:select="select"
+        v-on:sidePageChange="sidePageChange"/>
       <div class="wrapper col-5 bg-light border">
         <div
             @click="Gunselect"

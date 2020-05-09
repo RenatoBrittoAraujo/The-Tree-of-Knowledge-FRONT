@@ -26,13 +26,13 @@ var authHeader = function () {
 }
 
 var testAcessToken = async function () {
-  return await axios.post(ip + 'token/verify/', { token: getData('access') })
+  return axios.post(ip + 'token/verify/', { token: getData('access') })
     .then(() => true)
     .catch(() => false)
 }
 
 var refreshAccessToken = async function () {
-  return await axios.post(ip + 'token/refresh/', 
+  return axios.post(ip + 'token/refresh/', 
                   { refresh: getData('refresh') })
     .then(res => { setData('access', res.data['access']); return true })
     .catch(() => false)
@@ -185,8 +185,8 @@ var addNode = async function (data) {
 
 var addEdge = async function (from, to) {
   return await axios.post(ip + 'addedge/', { source: from, target: to }, await header())
-    .then(res => res.data)
-    .catch(() => false)
+    .then(res => { res.data.status = true; return res.data })
+    .catch(err => err.response)
 }
 
 var addRef = async function (data) {

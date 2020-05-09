@@ -51,7 +51,6 @@ export default function ($, canvasID, methods) {
       if (selected && selected.node.name == newSelected.node.name) {
         selected.node.addData('selected', false)
         selected = null
-        methods.NDunselect()
         return
       }
       if (selected) {
@@ -142,35 +141,51 @@ export default function ($, canvasID, methods) {
               w: textWidth + 2.0 * Globals.horizontalPadding,
               h: Globals.textSize + 2.0 * Globals.verticalPadding
             }
-
+            
             let radius = Globals.verticalPadding + Globals.textSize / 2.0
             let cy = shape.y + Globals.verticalPadding + Globals.textSize / 2.0
             let firstCX = shape.x + radius
             let secondCX = shape.x + shape.w - radius
-
+            
             ctx.beginPath()
             ctx.fillStyle = (node.getData('expanded')) ?
-              Globals.expandedColor : Globals.notexpandedColor
+            Globals.expandedColor : Globals.notexpandedColor
             // Left circle
             ctx.arc(firstCX, cy, radius, 0, 2.0 * Math.PI);
             ctx.fill()
             
             ctx.beginPath()
             ctx.fillStyle = (node.getData('selected')) ? 
-              Globals.activeColor : Globals.inactiveColor
+            Globals.activeColor : Globals.inactiveColor
             // Right circle
             ctx.arc(secondCX, cy, radius, 0, 2.0 * Math.PI);
             ctx.fill()
             // Middle rect
             ctx.fillRect(shape.x + radius, shape.y, shape.w - 2.0 * radius, shape.h)
             
-
             // Font rendering
             ctx.font = textParams
             ctx.fillStyle = Globals.textColor
             ctx.fillText(text, 
               shape.x + Globals.horizontalPadding, 
               shape.y + Globals.textSize + Globals.verticalPadding - 2.0 /* I have no ideia why, but this 2 makes everything ok*/)
+              
+            // If child, render the close button in it's side
+            let isChild = particleSystem.getEdgesFrom(node).length == 0
+            if (isChild) {
+              let closeBtn = {
+                x: secondCX + 18, 
+                y: cy - 13,
+                radius: 7
+              }
+              ctx.fillStyle = 'rgb(200,0,0)'
+              ctx.beginPath()
+              ctx.arc(closeBtn.x, closeBtn.y, closeBtn.radius, 0, 2.0 * Math.PI);
+              ctx.fill()
+              node.addData('closeNode', closeBtn)
+            } else {
+              node.addData('closeNode', null)
+            }
           }
         })
       },
@@ -191,9 +206,19 @@ export default function ($, canvasID, methods) {
         } 
 
         var handler = {
-          clicked: function (e) {
+          clicked: async function (e) {
             var pos = $(canvas).offset();
             _mouseP = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
+
+            // Check for closing a node
+            let foundNode = await particleSystem.closeButton(_mouseP)
+            if (foundNode) {
+              childMurder(foundNode)
+              particleSystem.pruneNode(foundNode)
+              return false
+            }
+            
+            // Check for selected or dragging of a node
             dragged = particleSystem.nearest(_mouseP);
             if (dragged && dragged.node !== null) {
               if (dragged.node.name == hiddenNode) {
@@ -284,6 +309,7 @@ export default function ($, canvasID, methods) {
     sys.addNode(node.name || 'emptyNode', { x: 0, y: 0, mass: 1 } )
     sys.getNode(node.name || 'emptyNode').addData('id', node.id)
     sys.addNode(hiddenNode, { hidden: true, x: 0, y: 0, mass: 1})
+    sys.addNode(hiddenNode, { hidden: true, x: 0, y: 0, mass: 1 })
     /* WARNING: for some reason, arbor crashed when you try
        to add a new node later if in this init function you
        only declare one single node. I have no ideia why,
@@ -294,12 +320,21 @@ export default function ($, canvasID, methods) {
        that ridiculous name, rendering is safe */
   }
 
-  var addNode = (node, from) => {
-    sys.addNode(node.name, { mass: 1 })
-    sys.getNode(node.name).addData('id', node.id)
-    if (from) {
+  var createNode = (obj) => {
+    sys.addNode(obj.name)
+    sys.getNode(obj.name).addData('id', obj.id)
+  }
+
+  var addNode = (node, from = null) => {
+    createNode(node)
+    if (from != null && from != undefined) {
+      if (sys.getNode(from) === undefined) {
+        createNode(from)
+        from = from.name
+      }
       sys.addEdge(from, node.name)
-      sys.getNode(node.name).addData('parent', sys.getNode(from))
+      sys.getNode(node.name)
+        .addData('parent', sys.getNode(from))
     }
   }
 

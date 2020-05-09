@@ -40,12 +40,12 @@
       </div>
     </div>
 <!-- FORM FOR NEW NODE -->
-  <div class="modal fade" id="nodeForm" tabindex="-1" role="dialog"
-    aria-labelledby="nodeFormLabel" aria-hidden="true">
+  <div class="modal fade" id="nodeEdgeForm" tabindex="-1" role="dialog"
+    aria-labelledby="nodeEdgeFormLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="nodeFormLabel">Add a new node</h5>
+          <h5 class="modal-title" id="nodeEdgeFormLabel">Add a new node</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -69,7 +69,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-success"
-            @click="addNode" data-dismiss="modal">Add Node</button>
+            @click="addNodeWithEdge" data-dismiss="modal">Add Node</button>
         </div>
       </div>
     </div>
@@ -259,7 +259,7 @@
         <div class="col-3">
           <button class="col btn mr-1 btn-primary"
             data-toggle="modal"
-            data-target="#nodeForm">
+            data-target="#nodeEdgeForm">
               Add Node
           </button>
         </div>
@@ -461,7 +461,7 @@ export default {
         this.$snack.success('Something went wrong, try again')
       }
     },
-    async addNode () {
+    async addNodeWithEdge () {
       if (!(await HTTP.isLoggedIn())) {
         this.$snack.success('You must be logged in to add a node')
         return
@@ -476,10 +476,12 @@ export default {
       }
       const created = await HTTP.addNode(data)
       if (created) {
-        const addedEdge = await HTTP.addEdge(this.id, created.id)
-        if (addedEdge) {
+        const edgeAdded = await HTTP.addEdge(this.id, created.id)
+        if (typeof (edgeAdded) !== 'string') {
           this.$emit('newNode', { from: this.title, node: created })
           this.$snack.success('Node created')
+        } else {
+          this.$snack.success(edgeAdded)
         }
       } else {
         this.$snack.success('Node ' + data.name + ' already exists')

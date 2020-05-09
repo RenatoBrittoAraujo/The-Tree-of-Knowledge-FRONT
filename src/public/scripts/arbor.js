@@ -652,6 +652,22 @@
         }
       },
 
+      closeButton: function(pos){
+        let found = false
+        $.each(state.nodes, function (id, node) {
+          if (!found && !node.data.hidden) {
+            const closeNode = node.getData('closeNode')
+            if (closeNode != null) {
+              if (Math.hypot(pos.x - closeNode.x, pos.y - closeNode.y)
+                <= closeNode.radius) {
+                found = node
+              }
+            }
+          }
+        })
+        return found
+      },
+
       // Find the nearest node to a particular position
       nearest:function(pos){
         if (_screenSize!==null) pos = that.fromScreen(pos)
