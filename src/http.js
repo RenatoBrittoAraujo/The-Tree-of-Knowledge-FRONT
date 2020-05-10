@@ -4,6 +4,7 @@ import axios from 'axios'
 import cookies from 'vue-cookies'
 
 var determineIPandPORT = function () {
+  return 'https://nameless-escarpment-92346.herokuapp.com/'
   return 'http://localhost:8002/'
 }
 
