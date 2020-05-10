@@ -41,7 +41,7 @@ var refreshAccessToken = async function () {
 var header = async function () {
   if (!(await testAcessToken())) {
     if (!(await refreshAccessToken())) {
-      return false
+      return {}
     }
   }
   return authHeader()
@@ -50,14 +50,15 @@ var header = async function () {
 /* HELPERS */
 
 var isLoggedIn = async function () {
-  if (!(await header())) {
-    setData('refresh', null)
-    setData('access', null)
-    setData('username', null)
-    return false
-  } else {
-    return true
+  if (!(await testAcessToken())) {
+    if (!(await refreshAccessToken())) {
+      setData('refresh', null)
+      setData('access', null)
+      setData('username', null)
+      return false
+    }
   }
+  return true
 }
 
 var getUser = function () {
@@ -137,9 +138,9 @@ var queryNode = async function (nodeID) {
 
 var getNode = async function (nodeID, parent=null) {
   const parentReq = parent != undefined && parent != null ?
-    '?parent=' + parent : ''
+    '/?parent=' + parent : '/'
   if (await isLoggedIn())
-    return axios.get(ip + 'nodes/' + nodeID + '/' + parentReq, await header())
+    return axios.get(ip + 'nodes/' + nodeID + parentReq, await header())
       .then(res => res.data)
       .catch(() => false)
   else return axios.get(ip + 'nodes/' + nodeID + parentReq)
