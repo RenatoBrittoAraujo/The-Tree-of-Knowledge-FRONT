@@ -7,7 +7,7 @@ import store from '@/store/index.js'
 const env = process.env.NODE_ENV
 let ip
 
-if (env === 'production') {
+if (env === 'production' || true) {
   ip = 'https://the-tree-of-knowledge-back.herokuapp.com/'
 } else if (env === 'development') {
   ip = 'http://localhost:8000/'

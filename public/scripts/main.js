@@ -101,13 +101,18 @@ export default function ($, canvasID, methods) {
         resizer()
         $(window)
           .resize(() => {
+            console.log('windows resize')
             resizer()
           })
         $(canvas)
           .resize(() => {
+            console.log('canvas resize')
             resizer()
           })
-        // setInterval(() => resizer(), 1000)
+        $('.collapse')
+          .on('shown.bs.collapse', () => resizer())
+        $('.collapse')
+          .on('hidden.bs.collapse', () => resizer())
         particleSystem.screenPadding(Globals.screenPadding)
         that.initMouseHandling()
       },
@@ -236,7 +241,7 @@ export default function ($, canvasID, methods) {
               tapStart = false
               return
             }
-            if (dragged.node !== null) {              
+            if (dragged && dragged.node !== null) {              
               lastClickedNode = dragged.node
             }
             if (dragged && dragged.node !== null) {

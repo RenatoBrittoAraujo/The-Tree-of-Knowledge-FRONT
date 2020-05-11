@@ -7,7 +7,7 @@
     "build": "npx vue-cli-service build",
     "lint": "npx vue-cli-service lint",
     "postinstall": "npm install express",
-  	"start": "node server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.28",
@@ -18,7 +18,7 @@
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.12.0",
     "core-js": "^3.6.4",
-    "jquery": "^3.5.0",
+    "jquery": "^3.5.1",
     "popper.js": "^1.16.1",
     "vue": "^2.6.11",
     "vue-cookies": "^1.7.0",
