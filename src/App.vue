@@ -165,4 +165,8 @@ html, body {
   overflow: hidden;
   min-height: 100%;
 }
+.link-text {
+  color: #2358eb;
+  display: inline;
+}
 </style>

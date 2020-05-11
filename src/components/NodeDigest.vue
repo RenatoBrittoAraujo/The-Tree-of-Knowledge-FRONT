@@ -15,8 +15,9 @@
             <div class="modal-body">
               <div class="text-center text-muted bg-light p-1">
                 Make sure to read the
-                <a href="#rules" data-dismiss="modal"
-                  @click="$emit('sidePageChange', { page: 'Rules' } )">rules</a>
+                <span data-dismiss="modal"
+                  class="link-text"
+                  @click="$emit('sidePageChange', { page: 'Rules' } )">rules</span>
                 before
               </div>
               <div class="form-group">
@@ -53,8 +54,9 @@
         <div class="modal-body">
           <div class="text-center text-muted bg-light p-1">
             Make sure to read the
-            <a href="#rules" data-dismiss="modal"
-              @click="$emit('sidePageChange', { page: 'Rules' } )"> rules </a>
+            <span data-dismiss="modal"
+              class="link-text"
+              @click="$emit('sidePageChange', { page: 'Rules' } )"> rules </span>
             before
           </div>
           <div class="form-group">
@@ -88,8 +90,9 @@
             <div class="modal-body">
               <div class="text-center text-muted bg-light p-1">
                 Make sure to read the
-                <a href="#rules" data-dismiss="modal"
-                  @click="$emit('sidePageChange', { page: 'Rules' } )">rules</a>
+                <span data-dismiss="modal"
+                  class="link-text"
+                  @click="$emit('sidePageChange', { page: 'Rules' } )">rules</span>
                 before
               </div>
               <div class="form-group">
@@ -126,8 +129,9 @@
         <div class="modal-body">
           <div class="text-center text-muted bg-light p-1">
             Make sure to read the
-            <a href="#rules" data-dismiss="modal"
-              @click="$emit('sidePageChange', { page: 'Rules' } )"> rules </a>
+            <span data-dismiss="modal"
+              class="link-text"
+              @click="$emit('sidePageChange', { page: 'Rules' } )"> rules </span>
             before
           </div>
           <div class="form-group">
@@ -165,9 +169,10 @@
   </div>
 <!-- PAGE CONTENT -->
     <h3 class="text-center mt-1">{{ title }}</h3>
-    <h6 class="text-center">Author: <a href="#"
-      @click="$emit('sidePageChange', { page: 'AccountShow', username: author })">
-      {{ author }}</a></h6>
+    <h6 class="text-center">Author: <p
+      @click="$emit('sidePageChange', { page: 'AccountShow', username: author })"
+      class="link-text">
+      {{ author }}</p></h6>
     <hr/>
     <p v-if="body.length">
       {{ body }}
@@ -230,9 +235,9 @@
               size="sm"
               icon="thumbs-down"
               @click="voteRef(index, -1)"/>
-            · by <a :href="'#'+reference.author"
+            · by <p class="link-text"
              @click="$emit('sidePageChange', { page: 'AccountShow', username: reference.author })">
-             {{ reference.author }} </a>
+             {{ reference.author }}</p>
             <a v-if="reference.author == getUser()" class="text-muted">
               · <a @click="fillRefEdit(index)"
                 data-toggle="modal" data-target="#refEditForm">Edit</a>

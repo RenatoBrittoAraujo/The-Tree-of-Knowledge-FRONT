@@ -14,8 +14,9 @@
           <div class="modal-body">
             <div class="text-center text-muted bg-light p-1">
               Make sure to read the
-              <a href="#rules" data-dismiss="modal"
-                @click="$emit('sidePageChange', { page: 'Rules' } )"> rules </a>
+              <span data-dismiss="modal"
+                class="link-text"
+                @click="$emit('sidePageChange', { page: 'Rules' } )"> rules </span>
               before
             </div>
             <div class="form-group">
@@ -36,6 +37,7 @@
       </div>
     </div>
 <!-- PAGE CONTENT -->
+    <div class="spinner-positioning spinner-border" v-if="$store.state.loading"/>
     <div class="float-bar col">
       <div class="row">
         <button class="btn btn-primary"
@@ -47,7 +49,7 @@
         </button>
       </div>
       <div class="row mt-2 p-2 float-bar w-100 border rounded" v-if="edgeCreate">
-        <p class="col">
+        <p class="col unselectable">
           {{ edgeCreateInstruction }}
         </p>
         <div class="col" v-if="edgeCreateChild && edgeCreateParent">
@@ -82,6 +84,7 @@ export default {
   },
   mounted () {
     this.runGraph()
+    // setInterval(() => { this.$store.state.loading = true }, 1000)
   },
   methods: {
     async addNode () {
@@ -179,6 +182,10 @@ export default {
         node = await HTTP.getRandomNode()
       }
       this.canvas.init(node)
+    },
+    setLoading (arg) {
+      console.log('setLoading', arg)
+      this.loading = arg
     }
   }
 }
@@ -186,8 +193,18 @@ export default {
 
 <style>
 .float-bar {
+  display: absolute;
   position: absolute;
   margin-top: 10px;
   margin-left: 10px;
+}
+.spinner-positioning {
+  display: absolute;
+  position: absolute;
+  right: 7px;
+  top: 13px;
+}
+.graph-area {
+  display: relative;
 }
 </style>

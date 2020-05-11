@@ -2,6 +2,7 @@
 
 import axios from 'axios'
 import cookies from 'vue-cookies'
+import store from '@/store/index.js'
 
 const env = process.env.NODE_ENV
 let ip
@@ -87,6 +88,7 @@ var getUsername = async function () {
 }
 
 var login = async function (data) {
+  store.state.loading = true
   return await axios.post(ip + 'token/', data)
     .then(async res => {
       setData('access', res.data['access'])
@@ -94,9 +96,11 @@ var login = async function (data) {
       return await getUsername()
     })
     .catch(() => false)
+    .finally(() => store.state.loading = false)
 }
 
 var register = async function (data) {
+  store.state.loading = true
   return await axios.post(ip + 'register/', data)
     .then(async res => {
       setData('username', res.data['username'])
@@ -110,122 +114,158 @@ var register = async function (data) {
             err['email'][0]
       return ret
     })
+    .finally(() => store.state.loading = false)
 }
 
 var queryUser = async function (username) {
+  store.state.loading = true
   return axios.get(ip + 'profile/' + username)
     .then(res => { return res.data })
     .catch(() => false)
+    .finally(() => store.state.loading = false)
 }
 
 var editUser = async function (data) {
+  store.state.loading = true
   return await axios.put(ip + 'profileupdate/' + getData('username'), data, await header())
     .then(res => true)
     .catch(() => false)
+    .finally(() => store.state.loading = false)
 }
 
 var reportUser = async function (user) {
+  store.state.loading = true
   return await axios.get(ip + 'reportuser/' + user, await header())
     .then(res => true)
     .catch(() => false)
+    .finally(() => store.state.loading = false)
 }
 
 /* === NODES API === */
 
 var queryNode = async function (nodeID) {
+  store.state.loading = true
   return axios.get(ip + 'nodes/' + nodeID + '/query/')
     .then(res => res.data)
     .catch(() => false)
+    .finally(() => store.state.loading = false)
 }
 
 var getNode = async function (nodeID, parent=null) {
+  store.state.loading = true
   const parentReq = parent != undefined && parent != null ?
     '/?parent=' + parent : '/'
   if (await isLoggedIn())
     return axios.get(ip + 'nodes/' + nodeID + parentReq, await header())
       .then(res => res.data)
       .catch(() => false)
+      .finally(() => store.state.loading = false)
   else return axios.get(ip + 'nodes/' + nodeID + parentReq)
     .then(res => res.data)
     .catch(() => false)
+    .finally(() => store.state.loading = false)
 }
 
 var voteNode = async function (nodeID, parent, voteparam) {
+  store.state.loading = true
   return axios.post(ip + 'nodes/' + nodeID + '/vote/', 
       { voteparam: '' + voteparam, parent: parent },
       await header()
     )
     .then(res => res.data)
     .catch((err) => false )
+    .finally(() => store.state.loading = false)
 }
 
 var voteRef = async function (refID, voteparam) {
+  store.state.loading = true
   return axios.post(ip + 'refs/' + refID + '/vote/',
     { voteparam: '' + voteparam },
     await header()
   )
     .then(res => res.data)
     .catch((err) => false)
-}
+    .finally(() => store.state.loading = false)
+  }
 
 var getRandomNode = async function () {
+  store.state.loading = true
   return axios.get(ip + 'nodes/')
     .then(res => res.data)
     .catch(() => false)
+    .finally(() => store.state.loading = false)
 }
 
 var reportNode = async function (id) {
+  store.state.loading = true
   return axios.get(ip + 'nodes/' + id + '/report/', await header())
     .then(res => res.data)
     .catch(() => false)
+    .finally(() => store.state.loading = false)
 }
 
 var addNode = async function (data) {
+  store.state.loading = true
   return await axios.post(ip + 'nodes/', data, await header())
     .then(res => res.data)
     .catch(() => false)
+    .finally(() => store.state.loading = false)
 }
 
 var addEdge = async function (from, to) {
+  store.state.loading = true
   return await axios.post(ip + 'addedge/', { source: from, target: to }, await header())
     .then(res => { res.data.status = true; return res.data })
     .catch(err => err.response)
+    .finally(() => store.state.loading = false)
 }
 
 var addRef = async function (data) {
+  store.state.loading = true
   return await axios.post(ip + 'refs/', data, await header())
     .then(res => res.data)
     .catch(() => false)
+    .finally(() => store.state.loading = false)
 }
 
 var editNode = async function (nodeID, data) {
+  store.state.loading = true
   return await axios.put(ip + 'nodes/' + nodeID + '/', data, await header())
     .then(res => true)
     .catch(() => false)
+    .finally(() => store.state.loading = false)
 }
 
 var editRef = async function (refID, data) {
+  store.state.loading = true
   return await axios.put(ip + 'refs/' + refID + '/', data, await header())
     .then(res => true)
     .catch((err) => false)
+    .finally(() => store.state.loading = false)
 }
 
 var deleteNode = async function (nodeID) {
+  store.state.loading = true
   return await axios.delete(ip + 'nodes/' + nodeID + '/', await header())
     .then(res => true)
     .catch(() => false)
+    .finally(() => store.state.loading = false)
 }
 
 var deleteRef = async function (refID) {
+  store.state.loading = true
   return await axios.delete(ip + 'refs/' + refID + '/', await header())
     .then(res => true)
     .catch(() => false)
+    .finally(() => store.state.loading = false)
 }
 
 var nodeSearch = async function (searchTerm) {
+  store.state.loading = true
   return await axios.get(ip + 'nodes/search/' + searchTerm + '/')
     .then(res => res.data)
     .catch(() => false)
+    .finally(() => store.state.loading = false)
 }
 
 export default {

@@ -8,27 +8,24 @@
       <ul class="navbar-nav mr-auto">
         <li class="nav-link">
           <a class="nav-link"
-            href="#about"
             @click="$emit('sidePageChange', { page: 'About' })">
             About
           </a>
         </li>
         <li class="nav-link">
           <a class="nav-link"
-            href="#about"
             @click="$emit('randomNode')">
             Random
           </a>
         </li>
         <li class="nav-link">
           <a class="nav-link"
-            href="#rules"
             @click="$emit('sidePageChange', { page: 'Rules' } )">
             Rules
           </a>
         </li>
         <li class="nav-link">
-          <a class="nav-link" href="#users"
+          <a class="nav-link"
             @click="$emit('sidePageChange', { page: 'UserDigest' })">
             <font-awesome-icon icon="user-circle" size="1x"/>
           </a>

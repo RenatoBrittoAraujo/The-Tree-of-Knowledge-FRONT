@@ -2,8 +2,9 @@
   <div class="mt-4">
     <div class="text-center text-muted bg-white border p-1">
       Make sure to read the
-      <a href="#rules"
-        @click="$emit('sidePageChange', { page: 'Rules' } )">rules</a>.
+      <span
+        class="link-text"
+        @click="$emit('sidePageChange', { page: 'Rules' } )">rules</span>.
     </div>
     <div class="form-group text-lef mt-3">
       <label>Username:</label>
