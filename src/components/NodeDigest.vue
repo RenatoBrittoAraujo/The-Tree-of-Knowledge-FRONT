@@ -284,6 +284,18 @@
           Deletes this node
         </div>
       </div>
+      <div class="row mt-1" v-if="getUser() == author && parent">
+        <div class="col-3">
+          <button class="col btn mr-1 btn-danger"
+            data-toggle="modal"
+            data-target="#deleteModal"
+            @click="toDelete = { edge: true, source: parent.data.id, target: id }">
+              Delete</button>
+        </div>
+        <div class="col-9 mt-2">
+          Deletes edge coming from {{ parent.name }}
+        </div>
+      </div>
     </div>
     <hr>
     <div class="row px-3 mt-1 mb-3">
@@ -359,6 +371,14 @@ export default {
           this.$emit('deleteNode', { name: this.title, id: this.id })
           this.$emit('popSidePage')
           this.$snack.success('Node deleted')
+        } else {
+          this.$snack.success('Something went wrong, try again')
+        }
+      } else if (this.toDelete.edge) {
+        const deleted = await HTTP.deleteEdge(this.toDelete.source, this.toDelete.target)
+        if (!deleted) {
+          this.$snack.success('Edge deleted')
+          this.$emit('deleteEdge', { parent: this.parent.name, child: this.title })
         } else {
           this.$snack.success('Something went wrong, try again')
         }

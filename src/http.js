@@ -7,7 +7,7 @@ import store from '@/store/index.js'
 const env = process.env.NODE_ENV
 let ip
 
-if (env === 'production' || true) {
+if (env === 'production') {
   ip = 'https://the-tree-of-knowledge-back.herokuapp.com/'
 } else if (env === 'development') {
   ip = 'http://localhost:8000/'
@@ -214,7 +214,15 @@ var addNode = async function (data) {
 
 var addEdge = async function (from, to) {
   store.state.loading = true
-  return await axios.post(ip + 'addedge/', { source: from, target: to }, await header())
+  return await axios.post(ip + 'edges/', { source: from, target: to }, await header())
+    .then(res => { res.data.status = true; return res.data })
+    .catch(err => err.response)
+    .finally(() => store.state.loading = false)
+}
+
+var deleteEdge = async function (from, to) {
+  store.state.loading = true
+  return await axios.post(ip + 'edges/delete/', { source: from, target: to }, await header())
     .then(res => { res.data.status = true; return res.data })
     .catch(err => err.response)
     .finally(() => store.state.loading = false)
@@ -296,5 +304,6 @@ export default {
   editRef,        // input: node id                          output: list of child node ids
   deleteNode,
   deleteRef,
+  deleteEdge,
   nodeSearch,
 }

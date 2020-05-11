@@ -3,11 +3,11 @@
     <Header class="row"
       v-on:sidePageChange="sidePageChange"
       v-on:randomNode="randomNode"/>
-    <div class="row section">
-      <Graph class="col-7 graph" id="graph" ref="graph"
+    <div :class="(stacked ? '' : 'row') + ' section'">
+      <Graph :class="'col-12 col-sm-7 ' + (stacked ? 'graph-shrunk' : 'graph')" id="graph" ref="graph"
         v-on:select="select"
         v-on:sidePageChange="sidePageChange"/>
-      <div class="wrapper col-5 bg-light border">
+      <div :class="(stacked ? '' : 'wrapper') + ' col-12 col-sm-5 bg-light border'">
         <div
             @click="Gunselect"
             v-if="sideBarQueue.length > 1">
@@ -20,7 +20,8 @@
           v-on:sidePageChange="sidePageChange"
           v-on:newNode="newNode"
           v-on:popSidePage="popSidePage"
-          v-on:deleteNode="deleteNode"/>
+          v-on:deleteNode="deleteNode"
+          v-on:deleteEdge="deleteEdge"/>
         <About v-else-if="topPage() == 'About'"/>
         <Rules v-else-if="topPage() == 'Rules'"/>
         <HelpDigest v-else-if="topPage() == 'HelpDigest'"
@@ -73,10 +74,15 @@ export default {
   },
   data () {
     return {
-      sideBarQueue: [{ page: 'HelpDigest' }]
+      sideBarQueue: [{ page: 'HelpDigest' }],
+      stacked: false
     }
   },
   mounted () {
+    this.stacked = window.innerWidth < 576
+    window.addEventListener('resize', (e) => {
+      this.stacked = window.innerWidth < 576
+    })
   },
   methods: {
     createNewNode () {
@@ -130,6 +136,9 @@ export default {
     },
     deleteNode (node) {
       this.$refs.graph.deleteNode(node)
+    },
+    deleteEdge (edge) {
+      this.$refs.graph.deleteEdge(edge)
     }
   }
 }
@@ -164,6 +173,11 @@ html, body {
   flex-grow: 1;
   overflow: hidden;
   min-height: 100%;
+}
+.graph-shrunk {
+  flex-grow: 1;
+  overflow: hidden;
+  max-height: 80%;
 }
 .link-text {
   color: #2358eb;

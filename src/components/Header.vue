@@ -1,10 +1,10 @@
 <template>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark px-4">
     <a class="navbar-brand">The Tree of Knowledge</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarcollapse123">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbar">
+    <div class="collapse navbar-collapse" id="navbarcollapse123">
       <ul class="navbar-nav mr-auto">
         <li class="nav-link">
           <a class="nav-link"
@@ -38,20 +38,3 @@
     </div>
   </nav>
 </template>
-
-<script>
-
-export default {
-  computed: {
-    currentRoute () {
-      return this.$route.name
-    }
-  }
-}
-</script>
-
-<style>
-.header {
-  background-color: red;
-}
-</style>

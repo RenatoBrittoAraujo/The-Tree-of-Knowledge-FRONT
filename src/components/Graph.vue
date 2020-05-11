@@ -182,6 +182,9 @@ export default {
         node = await HTTP.getRandomNode()
       }
       this.canvas.init(node)
+    },
+    deleteEdge (edge) {
+      this.canvas.deleteEdge(edge)
     }
   }
 }

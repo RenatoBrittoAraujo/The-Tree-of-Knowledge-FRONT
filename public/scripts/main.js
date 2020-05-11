@@ -10,7 +10,7 @@ export default function ($, canvasID, methods) {
   var Globals = {
     // Globals canvas params
     backgroundColor: "white",
-    screenPadding: 80,
+    screenPadding: 20,
 
     // Edge params
     edgeThickness: 2,
@@ -100,21 +100,17 @@ export default function ($, canvasID, methods) {
         let resizer = this.resize
         resizer()
         $(window)
-          .resize(() => {
-            console.log('windows resize')
-            resizer()
-          })
+          .resize(() => resizer())
         $(canvas)
-          .resize(() => {
-            console.log('canvas resize')
-            resizer()
-          })
+          .resize(() => resizer())
         $('.collapse')
           .on('shown.bs.collapse', () => resizer())
         $('.collapse')
           .on('hidden.bs.collapse', () => resizer())
         particleSystem.screenPadding(Globals.screenPadding)
         that.initMouseHandling()
+        canvas.width = canvas.width * 2.0;
+        canvas.height = canvas.height * 2.0;
       },
       /* Called many times to re-render the entire canvas */
       redraw: function () {
@@ -263,12 +259,8 @@ export default function ($, canvasID, methods) {
             return false
           },
           doubleclick: function (e) {
-            if (e.type == 'dblclick') {
-              doubleTapTime = 0
-            }
-            if (e.type == 'touchstart' && 
-                doubleTapTime === 0) {
-              return
+            if (e.type == 'touchstart') {
+              $(canvas).unbind('dblclick', handler.doubleclick)
             }
             var pos = $(canvas).offset();
             if (e.type === 'touchstart') {
@@ -333,7 +325,7 @@ export default function ($, canvasID, methods) {
 
         $(canvas).bind('touchstart', handler.clicked)
         $(canvas).bind('mousedown', handler.clicked)
-        $(canvas).dblclick(handler.doubleclick)
+        $(canvas).bind('dblclick', handler.doubleclick)
       },
       /* Resizes renderer to canvas size */
       resize: () => {
@@ -413,6 +405,10 @@ export default function ($, canvasID, methods) {
     deleteNodeRecursion(name)
   }
 
+  var deleteEdge = function (edge) {
+    sys.pruneEdge(sys.getEdges(edge.parent, edge.child)[0])
+  }
+
   /* These are functions accessible from the vue component Graph,
      they are used to communicate with the canvas */
   return {
@@ -420,6 +416,7 @@ export default function ($, canvasID, methods) {
     addNode,
     unselect,
     select,
-    deleteNode
+    deleteNode,
+    deleteEdge
   }
 }
