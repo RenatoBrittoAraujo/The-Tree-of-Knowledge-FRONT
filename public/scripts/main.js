@@ -253,7 +253,13 @@ export default function ($, canvasID, methods) {
             return false
           },
           doubleclick: function (e) {
-            console.log('doubleclick called')
+            if (e.type == 'dblclick') {
+              doubleTapTime = 0
+            }
+            if (e.type == 'touchstart' && 
+                doubleTapTime === 0) {
+              return
+            }
             var pos = $(canvas).offset();
             if (e.type === 'touchstart') {
               _mouseP = arbor.Point(e.targetTouches[0].pageX - pos.left, e.targetTouches[0].pageY - pos.top)
