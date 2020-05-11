@@ -194,6 +194,9 @@ export default function ($, canvasID, methods) {
         var dragged = null;
         var _mouseP = null;
         var moved = false;
+        var tapStart = false;
+        var doubleTapTime = 1000; // milliseconds
+        var lastClickedNode = null;
 
         /* This function kills all node's children, grandchildren and so on */
         var childMurder = function (node) {
@@ -208,8 +211,11 @@ export default function ($, canvasID, methods) {
         var handler = {
           clicked: async function (e) {
             var pos = $(canvas).offset();
-            _mouseP = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
-
+            if (e.type === 'touchstart') {
+              _mouseP = arbor.Point(e.targetTouches[0].pageX - pos.left, e.targetTouches[0].pageY - pos.top)
+            } else {
+              _mouseP = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
+            }
             // Check for closing a node
             let foundNode = await particleSystem.closeButton(_mouseP)
             if (foundNode) {
@@ -217,9 +223,17 @@ export default function ($, canvasID, methods) {
               particleSystem.pruneNode(foundNode)
               return false
             }
-            
             // Check for selected or dragging of a node
             dragged = particleSystem.nearest(_mouseP);
+            if (tapStart && e.type == 'touchstart' &&
+                dragged.node !== null && lastClickedNode == dragged.node) {
+              handler.doubleclick(e)
+              tapStart = false
+              return
+            }
+            if (dragged.node !== null) {              
+              lastClickedNode = dragged.node
+            }
             if (dragged && dragged.node !== null) {
               if (dragged.node.name == hiddenNode) {
                 return
@@ -227,13 +241,25 @@ export default function ($, canvasID, methods) {
               dragged.node.fixed = true
             }
             moved = false
-            $(canvas).bind('mousemove', handler.dragged)
-            $(window).bind('mouseup', handler.dropped)
+            if (e.type === 'touchstart') {
+              $(canvas).bind('touchmove', handler.dragged)
+              $(window).bind('touchend', handler.dropped)
+              tapStart = true
+              setTimeout(() => { tapStart = false; }, doubleTapTime)
+            } else {
+              $(canvas).bind('mousemove', handler.dragged)
+              $(window).bind('mouseup', handler.dropped)
+            }
             return false
           },
           doubleclick: function (e) {
+            console.log('doubleclick called')
             var pos = $(canvas).offset();
-            var _mouseP = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
+            if (e.type === 'touchstart') {
+              _mouseP = arbor.Point(e.targetTouches[0].pageX - pos.left, e.targetTouches[0].pageY - pos.top)
+            } else {
+              _mouseP = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
+            }
             var particle = particleSystem.nearest(_mouseP);
             if (particle && particle.node !== null) {
               if (particle.node.name == hiddenNode) {
@@ -255,7 +281,12 @@ export default function ($, canvasID, methods) {
           dragged: function (e) {
             moved = true
             var pos = $(canvas).offset();
-            var s = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
+            var s
+            if (e.type === 'touchmove') {
+              s = arbor.Point(e.targetTouches[0].pageX - pos.left, e.targetTouches[0].pageY - pos.top)
+            } else {
+              s = arbor.Point(e.pageX - pos.left, e.pageY - pos.top)
+            }
             if (dragged && dragged.node !== null) {
               var p = particleSystem.fromScreen(s)
               dragged.node.p = p
@@ -272,14 +303,20 @@ export default function ($, canvasID, methods) {
             }
             dragged.node.tempMass = 1000
             dragged = null
-            $(canvas).unbind('mousemove', handler.dragged)
-            $(window).unbind('mouseup', handler.dropped)
+            if (e.type == 'touchend') {
+              $(canvas).unbind('touchmove', handler.dragged)
+              $(window).unbind('touchend', handler.dropped)
+            } else {
+              $(canvas).unbind('mousemove', handler.dragged)
+              $(window).unbind('mouseup', handler.dropped)
+            }
             _mouseP = null
             return false
           }
         }
 
-        $(canvas).mousedown(handler.clicked)
+        $(canvas).bind('touchstart', handler.clicked)
+        $(canvas).bind('mousedown', handler.clicked)
         $(canvas).dblclick(handler.doubleclick)
       },
       /* Resizes renderer to canvas size */

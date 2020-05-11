@@ -182,10 +182,6 @@ export default {
         node = await HTTP.getRandomNode()
       }
       this.canvas.init(node)
-    },
-    setLoading (arg) {
-      console.log('setLoading', arg)
-      this.loading = arg
     }
   }
 }
