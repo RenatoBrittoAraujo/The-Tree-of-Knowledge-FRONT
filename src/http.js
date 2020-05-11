@@ -3,15 +3,16 @@
 import axios from 'axios'
 import cookies from 'vue-cookies'
 
-var determineIPandPORT = function () {
-  return 'https://nameless-escarpment-92346.herokuapp.com/'
-  return 'http://localhost:8002/'
+const env = process.env.NODE_ENV
+let ip
+
+if (env === 'production') {
+  ip = 'https://the-tree-of-knowledge-back.herokuapp.com/'
+} else if (env === 'development') {
+  ip = 'http://localhost:8000/'
 }
 
-const ip = determineIPandPORT()
-
 /* AUTH HELPERS */
-
 var setData = function(key, data) {
   cookies.set(key, data)
 }
