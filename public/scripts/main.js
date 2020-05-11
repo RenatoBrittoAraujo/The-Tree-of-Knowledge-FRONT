@@ -103,6 +103,7 @@ export default function ($, canvasID, methods) {
           .resize(() => {
             resizer()
           })
+        setInterval(() => resizer(), 1000)
         particleSystem.screenPadding(Globals.screenPadding)
         that.initMouseHandling()
       },
